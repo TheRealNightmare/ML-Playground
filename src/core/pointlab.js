@@ -83,7 +83,7 @@ export function createPointLab(root, cfg) {
   /* ---------- points ---------- */
   L.newPoint = (x, y, name = null, wait = 0) => ({
     x, y, name,
-    col: GREY.clone(), tc: GREY, oc: null, fr: 0.66,
+    col: GREY.clone(), tc: GREY, oc: null, fr: 0.74,
     s: 0, ts: 1, sz: 1, wait,
     wx: 0, wy: 0, far: false,
   });
@@ -342,7 +342,7 @@ export function createPointLab(root, cfg) {
   }
   updateTip();
 
-  const num = (n) => h('span', { class: 'num' }, String(n).padStart(2, '0') + ' /');
+  const num = (n) => h('span', { class: 'num' }, `${n}.`);
   L.num = num;
   L.controlsData = section([num(1), 'Data'],
     h('div', { class: 'chips' }, chips),
@@ -383,8 +383,10 @@ export function createPointLab(root, cfg) {
       if (i) track.append(h('span', { class: 'phase-arrow' }, p.loopBack ? '⇄' : '→'));
       track.append(h('span', { class: 'phase-chip' + (i === ai ? ' active' : i < ai ? ' done' : '') }, p.label));
     });
+    const nPts = L.points.length;
+    lab.setCaption(`${cfg.meta.title} on ${nPts} point${nPts === 1 ? '' : 's'}${L.lecture ? ' — the worked example from the lecture slides' : ''}. ${items[ai]?.label ? `Current step: ${items[ai].label.trim().toLowerCase()}.` : ''} Click to add points, drag to move them.`);
     lab.narrator.replaceChildren(
-      h('div', { class: 'narrator-avatar bounce' }, String(Math.max(ai, 0) + 1).padStart(2, '0')),
+      h('div', { class: 'narrator-avatar bounce' }, h('small', {}, 'Step'), String(Math.max(ai, 0) + 1)),
       h('div', { class: 'narrator-main' }, items.length ? track : null, h('div', { class: 'narrator-title' }, title), h('div', { class: 'narrator-text', html: text })),
     );
   };

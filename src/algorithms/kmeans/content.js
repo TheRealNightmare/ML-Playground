@@ -16,7 +16,7 @@ export const PHASE_TRACK = [
   { id: 'init', label: 'Place ★' },
   { id: 'assign', label: 'Assign', loop: true },
   { id: 'update', label: 'Update', loop: true },
-  { id: 'converged', label: 'Done ' },
+  { id: 'converged', label: 'Done' },
 ];
 
 export function narration(S) {

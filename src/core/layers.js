@@ -61,13 +61,13 @@ export class RegionBackground {
           vec3 col = uBg;
           // dot grid
           vec2 q = vW - uOrigin;
+          // hairline grid, like a plot in a paper
           vec2 g = abs(fract(q / uGrid + 0.5) - 0.5) * uGrid;
-          float d = length(g);
-          float dotA = 1.0 - smoothstep(uPx * 1.1, uPx * 2.2, d);
-          col = mix(col, uDot, dotA * 0.9);
-          // axes through the origin
+          float gl = min(g.x, g.y);
+          col = mix(col, uDot, (1.0 - smoothstep(uPx * 0.35, uPx * 1.2, gl)) * 0.75);
+          // axes through the origin, a little stronger
           float ax = min(abs(q.x), abs(q.y));
-          col = mix(col, uDot, (1.0 - smoothstep(uPx * 0.6, uPx * 1.6, ax)) * 0.55);
+          col = mix(col, uInk, (1.0 - smoothstep(uPx * 0.4, uPx * 1.3, ax)) * 0.16);
 
           if (uK > 0 && uRegion > 0.001 && uFuzzy > 0.5) {
             // Fuzzy C-Means membership field: blend cluster colors by membership
@@ -85,7 +85,7 @@ export class RegionBackground {
               mixed += u * uCol[j];
             }
             // stronger tint where one cluster dominates, paler where they overlap
-            col = mix(col, mixed, (0.10 + 0.16 * best) * uRegion);
+            col = mix(col, mixed, (0.06 + 0.12 * best) * uRegion);
           } else if (uK > 0 && uRegion > 0.001) {
             float b1 = 1e9; float b2 = 1e9; int bi = 0; int bj = 0;
             for (int i = 0; i < 8; i++) {
@@ -100,7 +100,7 @@ export class RegionBackground {
               if (i == bi) { rc = uCol[i]; ca = uC[i]; }
               if (i == bj) { cb = uC[i]; }
             }
-            col = mix(col, rc, 0.17 * uRegion);
+            col = mix(col, rc, 0.10 * uRegion);
             if (uK > 1) {
               float edgeDist;
               if (uMetric == 1) {
@@ -111,7 +111,7 @@ export class RegionBackground {
                 edgeDist = (b2 * b2 - b1 * b1) / (2.0 * sep);
               }
               float edge = 1.0 - smoothstep(uPx * 0.8, uPx * 2.2, edgeDist);
-              col = mix(col, uInk, edge * 0.45 * uRegion);
+              col = mix(col, uInk, edge * 0.35 * uRegion);
             }
           }
           gl_FragColor = vec4(col, 1.0);
@@ -189,7 +189,7 @@ export class PointLayer {
       _m.compose(_p, _q, _s);
       this.outline.setMatrixAt(i, _m);
       this.outline.setColorAt(i, p.oc || this.ink);
-      const fr = p.fr ?? 0.66;
+      const fr = p.fr ?? 0.74;
       _s.set(s * fr, s * fr, 1);
       _m.compose(_p, _q, _s);
       this.fill.setMatrixAt(i, _m);

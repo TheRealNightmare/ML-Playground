@@ -26,7 +26,7 @@ const INIT_INFO = {
 
 export function mount(root) {
   const lab = createLab(root, {
-    accent: '#FFE07A',
+    accent: '#CA8A04',
     title: 'K-Means Clustering',
     emoji: '',
     category: 'Unsupervised · Clustering',
@@ -512,7 +512,7 @@ export function mount(root) {
   const tLinks = toggle({ label: 'Lines to their ★', emoji: '', value: S.show.links, onChange: (v) => (S.show.links = v) });
   const tTrails = toggle({ label: '★ footprints', emoji: '', value: S.show.trails, onChange: (v) => (S.show.trails = v) });
 
-  const num = (n) => h('span', { class: 'num' }, String(n).padStart(2, '0') + ' /');
+  const num = (n) => h('span', { class: 'num' }, `${n}.`);
   lab.controls.append(
     section([num(1), 'Data'],
       h('div', { class: 'chips' }, datasetChips.slice(0, -1)),
@@ -602,12 +602,12 @@ export function mount(root) {
   function updateChart() {
     if (S.chartMode === 'inertia') {
       chart.setLine(
-        S.history.map((d) => ({ y: d.J, color: d.kind === 'assign' ? '#8EC9F5' : '#FF8C7A' })),
+        S.history.map((d) => ({ y: d.J, color: d.kind === 'assign' ? '#2563EB' : '#F97316' })),
         { xLabel: 'step', empty: S.points.length ? 'Press Step to see inertia drop' : 'Add points first' },
       );
       chartLegend.replaceChildren(
-        h('span', {}, h('i', { style: { background: '#8EC9F5' } }), 'after Assign'),
-        h('span', {}, h('i', { style: { background: '#FF8C7A' } }), 'after Update'),
+        h('span', {}, h('i', { style: { background: '#2563EB' } }), 'after Assign'),
+        h('span', {}, h('i', { style: { background: '#F97316' } }), 'after Update'),
       );
       chartNote.innerHTML = S.history.length > 1
         ? 'Notice it <b>never goes up</b> — both steps can only make the groups tighter.'
@@ -621,10 +621,10 @@ export function mount(root) {
       }
       chart.setBars(elbowData.map((v, i) => ({
         label: String(i + 1), value: v,
-        color: i + 1 === S.K ? '#FFE07A' : '#EADBC4',
+        color: i + 1 === S.K ? '#CA8A04' : '#E5E7EB',
         highlight: i + 1 === S.K,
       })), { xLabel: 'K (number of clusters) — click a bar to use it' });
-      chartLegend.replaceChildren(h('span', {}, h('i', { style: { background: '#FFE07A' } }), `your K = ${S.K}`));
+      chartLegend.replaceChildren(h('span', {}, h('i', { style: { background: '#CA8A04' } }), `your K = ${S.K}`));
       chartNote.innerHTML = 'Best inertia found for each K. Find the <b>elbow</b>: the K after which bars stop shrinking much.';
     }
   }
@@ -648,7 +648,8 @@ export function mount(root) {
         if (i) track.append(h('span', { class: 'phase-arrow' }, i === 3 ? '⇄' : '→'));
         track.append(h('span', { class: 'phase-chip' + (i === activeIdx ? ' active' : i < activeIdx || (activeIdx === 2 && i === 3 && S.iter > 0) ? ' done' : '') }, p.label));
       });
-      const avatar = h('div', { class: 'narrator-avatar bounce' }, String(Math.max(activeIdx, 0) + 1).padStart(2, '0'));
+      const avatar = h('div', { class: 'narrator-avatar bounce' }, h('small', {}, 'Step'), String(Math.max(activeIdx, 0) + 1));
+      lab.setCaption(`K-Means on ${S.points.length} points, K = ${S.K}, ${S.metric} distance${S.lecture ? ' — the worked example from the lecture slides' : ''}. Stars are centroids; shaded regions show which centroid is nearest.`);
       lab.narrator.replaceChildren(
         avatar,
         h('div', { class: 'narrator-main' }, track, h('div', { class: 'narrator-title' }, nar.title), h('div', { class: 'narrator-text', html: nar.text })),

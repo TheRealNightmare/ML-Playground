@@ -1,23 +1,23 @@
-// Shared colors for every simulation — retro pastel, neo-retro style.
+// Shared colors for every simulation — "research paper" palette.
 // Keep three.js and CSS in sync from here.
 
-export const INK = 0x1a1a1a; // outlines
-export const PAPER = 0xfff6e9; // background cream
-export const GRID_DOT = 0xeadbc4; // dot grid
-export const NEUTRAL = 0xb5aba0; // unassigned / unlabeled points
+export const INK = 0x1f2937; // point / marker outlines
+export const PAPER = 0xffffff; // plot background
+export const GRID_DOT = 0xe5e7eb; // grid lines
+export const NEUTRAL = 0xb4bac4; // unassigned / unlabeled points
 
-// Cluster / class colors: slightly deeper pastels so points stay readable on cream.
+// Categorical colors for clusters / classes, chosen to stay distinct on white.
 export const PALETTE = [
-  0xff7a66, // coral
-  0x5fa8e8, // sky
-  0xffcf4a, // butter
-  0x4fc9a4, // mint
-  0x9d85ee, // lavender
-  0xf58fc0, // pink
-  0xffa45c, // peach
-  0x58b7c4, // teal
+  0x2563eb, // blue
+  0xf97316, // orange
+  0x0d9488, // teal
+  0xdc2626, // red
+  0x7c3aed, // violet
+  0xca8a04, // gold
+  0xdb2777, // pink
+  0x0891b2, // cyan
 ];
 
-export const PALETTE_NAMES = ['Coral', 'Sky', 'Butter', 'Mint', 'Lavender', 'Pink', 'Peach', 'Teal'];
+export const PALETTE_NAMES = ['Blue', 'Orange', 'Teal', 'Red', 'Violet', 'Gold', 'Pink', 'Cyan'];
 
 export const css = (hex) => '#' + hex.toString(16).padStart(6, '0');

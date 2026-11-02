@@ -1,7 +1,7 @@
 // ↑ ↑ ↓ ↓ ← → ← → B A — a few hundred points fly in and cluster themselves into the letters "ML".
 
 const CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-const COLORS = ['#FF8C7A', '#8EC9F5', '#FFE07A', '#7FD8BE', '#B9A6F2', '#A8E6A1', '#FFB37A'];
+const COLORS = ['#2563EB', '#F97316', '#0D9488', '#DC2626', '#7C3AED', '#CA8A04', '#DB2777'];
 const LINES = ['+30 XP · gradient descended', 'achievement unlocked: unsupervised fun', 'loss → 0 · vibes → ∞', 'converged in 1 iteration (cheating)'];
 
 export function installKonami() {
@@ -19,7 +19,7 @@ function targets(w, h, count) {
   c.width = w; c.height = h;
   const ctx = c.getContext('2d');
   const size = Math.min(w * 0.36, h * 0.55);
-  ctx.font = `${size}px "Archivo Black", "Arial Black", sans-serif`;
+  ctx.font = `600 ${size}px "Source Serif 4 Variable", Georgia, serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('ML', w / 2, h / 2);
@@ -59,7 +59,7 @@ function play() {
       const t = (now - t0) / 1000;
       ctx.clearRect(0, 0, W, H);
       const fade = t > 3.2 ? Math.max(0, 1 - (t - 3.2) / 0.6) : 1;
-      ctx.fillStyle = `rgba(255, 246, 233, ${0.82 * Math.min(1, t * 3) * fade})`;
+      ctx.fillStyle = `rgba(250, 250, 247, ${0.82 * Math.min(1, t * 3) * fade})`;
       ctx.fillRect(0, 0, W, H);
       for (const p of P) {
         const k = t < p.delay ? 0 : 1 - Math.exp(-(t - p.delay) * 4.2);
@@ -67,7 +67,7 @@ function play() {
         ctx.globalAlpha = fade;
         ctx.beginPath(); ctx.arc(x, y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.c; ctx.fill();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = '#000'; ctx.stroke();
+        ctx.lineWidth = 1; ctx.strokeStyle = '#111827'; ctx.stroke();
       }
       ctx.globalAlpha = 1;
       if (!shown && t > 1) { document.body.append(msg); shown = true; }

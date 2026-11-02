@@ -6,7 +6,7 @@ import { table, note, para, step, fmt, fx } from '../../core/worked.js';
 import * as D from './algo.js';
 import { LECTURES, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const NOISE_RING = new THREE.Color(0xa39889);
+const NOISE_RING = new THREE.Color(0x9ca3af);
 const name = (L, i) => L.points[i]?.name || `#${i + 1}`;
 
 export function mount(root) {
@@ -18,7 +18,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { accent: '#8EC9F5', title: 'DBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Intermediate', blurb: 'Grow clusters from crowded areas, one point at a time, and leave the loners as noise.' },
+    meta: { accent: '#2563EB', title: 'DBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Intermediate', blurb: 'Grow clusters from crowded areas, one point at a time, and leave the loners as noise.' },
     datasets: ['noisymoons', 'noisy', 'rings', 'density', 'smiley', 'blank'],
     defaultDataset: 'noisymoons',
     n: { min: 20, max: 700, step: 20, value: 260 },
@@ -29,7 +29,7 @@ export function mount(root) {
       { id: 'ready', label: 'Data' },
       { id: 'visit', label: 'Visit a point' },
       { id: 'expand', label: 'Expand cluster', loopBack: true },
-      { id: 'done', label: 'Done ' },
+      { id: 'done', label: 'Done' },
     ],
     learnTabs: [
       { id: 'intuition', label: 'Intuition', render: intuitionTab },
@@ -117,10 +117,10 @@ export function mount(root) {
   const kchart = new MiniChart({ height: 130, xLabel: 'points sorted by k-distance', empty: 'Add points' });
   const kNote = h('div', { class: 'chart-note' });
   const legend = h('div', { class: 'legend-row' },
-    h('span', {}, h('i', { style: { background: '#8EC9F5' } }), 'core'),
-    h('span', {}, h('i', { class: 'small', style: { background: '#8EC9F5' } }), 'border'),
+    h('span', {}, h('i', { style: { background: '#2563EB' } }), 'core'),
+    h('span', {}, h('i', { class: 'small', style: { background: '#2563EB' } }), 'border'),
     h('span', {}, h('i', { class: 'ring' }), 'noise'),
-    h('span', {}, h('i', { style: { background: '#B5ABA0' } }), 'not visited'));
+    h('span', {}, h('i', { style: { background: '#9CA3AF' } }), 'not visited'));
   const numbers = h('div', { class: 'card side-card' },
     h('h3', {}, 'Live numbers'), stats.el, legend,
     h('div', { class: 'sub-label' }, 'k-distance plot (pick ε at the knee)'), kchart.canvas, kNote);
@@ -149,17 +149,17 @@ export function mount(root) {
     const run = S.run;
     const epsW = L.space.wl(S.eps);
     circ.length = 0; segs.length = 0;
-    if (!run || run.points !== L.points) { for (const p of L.points) { p.tc = GREY; p.sz = 0.9; p.oc = null; p.fr = 0.66; } L.circles.sync(circ); L.segs.sync(segs); return; }
+    if (!run || run.points !== L.points) { for (const p of L.points) { p.tc = GREY; p.sz = 0.9; p.oc = null; p.fr = 0.74; } L.circles.sync(circ); L.segs.sync(segs); return; }
 
     L.points.forEach((p, i) => {
       const kind = run.kind(i);
       if (kind === 'unvisited') {
         const lab = run.labels[i];
         p.tc = lab >= 0 ? COLORS[lab % COLORS.length] : GREY;
-        p.sz = 0.85; p.oc = null; p.fr = 0.66;
+        p.sz = 0.85; p.oc = null; p.fr = 0.74;
       } else if (kind === 'noise') { p.tc = WHITE; p.oc = NOISE_RING; p.fr = 0.45; p.sz = 0.85; }
-      else if (kind === 'core') { p.tc = COLORS[run.labels[i] % COLORS.length]; p.oc = null; p.fr = 0.66; p.sz = 1.15; }
-      else { p.tc = COLORS[run.labels[i] % COLORS.length]; p.oc = null; p.fr = 0.66; p.sz = 0.72; }
+      else if (kind === 'core') { p.tc = COLORS[run.labels[i] % COLORS.length]; p.oc = null; p.fr = 0.74; p.sz = 1.15; }
+      else { p.tc = COLORS[run.labels[i] % COLORS.length]; p.oc = null; p.fr = 0.74; p.sz = 0.72; }
       if (S.show.areas && run.visited[i] && run.core[i]) circ.push({ x: p.wx, y: p.wy, r: epsW, col: COLORS[run.labels[i] % COLORS.length], fill: 0.05, ring: 0 });
     });
 
