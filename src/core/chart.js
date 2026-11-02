@@ -35,9 +35,12 @@ export class MiniChart {
   }
 
   /** points: [{ y, color }] — x is the index */
-  setLine(points, { xLabel, yLabel, empty } = {}) {
+  setLine(points, { xLabel, yLabel, empty, ref = null, noArea = false, dots = true } = {}) {
     this.mode = 'line';
     this.data = points;
+    this.ref = ref;
+    this.noArea = noArea;
+    this.dots = dots;
     if (xLabel != null) this.xLabel = xLabel;
     if (yLabel != null) this.yLabel = yLabel;
     if (empty != null) this.emptyText = empty;
@@ -45,8 +48,9 @@ export class MiniChart {
   }
 
   /** bars: [{ label, value, color, highlight }] */
-  setBars(bars, { xLabel, yLabel, empty } = {}) {
+  setBars(bars, { xLabel, yLabel, empty, ref = null } = {}) {
     this.mode = 'bars';
+    this.ref = ref;
     this.bars = bars;
     if (xLabel != null) this.xLabel = xLabel;
     if (yLabel != null) this.yLabel = yLabel;
@@ -81,7 +85,7 @@ export class MiniChart {
       ctx.fillText(this.emptyText, w / 2, h / 2);
       return;
     }
-    let maxY = Math.max(...values) * 1.08;
+    let maxY = Math.max(...values, this.ref && this.ref.y < Math.max(...values) * 3 ? this.ref.y : 0) * 1.08;
     if (!(maxY > 0)) maxY = 1;
     const minY = 0;
 
@@ -112,7 +116,7 @@ export class MiniChart {
       this.data.forEach((d, i) => (i ? ctx.lineTo(xOf(i), yOf(d.y)) : ctx.moveTo(xOf(i), yOf(d.y))));
       ctx.lineTo(xOf(n - 1), yOf(0)); ctx.lineTo(xOf(0), yOf(0)); ctx.closePath();
       ctx.fillStyle = 'rgba(155,93,229,0.10)';
-      ctx.fill();
+      if (!this.noArea) ctx.fill();
       // line
       ctx.beginPath();
       this.data.forEach((d, i) => (i ? ctx.lineTo(xOf(i), yOf(d.y)) : ctx.moveTo(xOf(i), yOf(d.y))));
@@ -120,7 +124,7 @@ export class MiniChart {
       ctx.stroke();
       // dots
       const r = n > 40 ? 2.5 : 4;
-      this.data.forEach((d, i) => {
+      if (this.dots !== false) this.data.forEach((d, i) => {
         ctx.beginPath(); ctx.arc(xOf(i), yOf(d.y), r, 0, Math.PI * 2);
         ctx.fillStyle = d.color || INK; ctx.fill();
         ctx.lineWidth = 1.5; ctx.strokeStyle = INK; ctx.stroke();
@@ -152,6 +156,15 @@ export class MiniChart {
         ctx.fillText(b.label, x + bw / 2, pad.t + ph + 13);
         this._barRects.push({ x: pad.l + slot * i, w: slot, i });
       });
+    }
+    if (this.ref && this.mode === 'line' || this.ref && this.mode === 'bars') {
+      const y = yOf(this.ref.y);
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = this.ref.color || '#FF6B6B'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = this.ref.color || '#FF6B6B'; ctx.font = '800 11px Nunito, system-ui, sans-serif';
+      ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+      ctx.fillText(this.ref.label || '', pad.l + 4, y - 3);
+      ctx.font = '600 11px Nunito, system-ui, sans-serif'; ctx.textBaseline = 'alphabetic';
     }
     // baseline
     ctx.strokeStyle = INK; ctx.lineWidth = 1.5;

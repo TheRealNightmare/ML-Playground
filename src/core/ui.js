@@ -49,6 +49,8 @@ export function slider({ label, min, max, step = 1, value, format = (v) => v, on
     el,
     get: () => Number(input.value),
     set(v) { input.value = v; out.textContent = format(Number(v)); paint(); },
+    setRange(lo, hi, st) { min = lo; max = hi; input.min = lo; input.max = hi; if (st) input.step = st; paint(); },
+    setFormat(fn) { format = fn; out.textContent = format(Number(input.value)); },
   };
 }
 

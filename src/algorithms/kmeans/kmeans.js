@@ -7,7 +7,10 @@ import { MiniChart } from '../../core/chart.js';
 import { h, section, slider, segmented, toggle, button, tabs } from '../../core/ui.js';
 import { PALETTE, PALETTE_NAMES, NEUTRAL, INK, css } from '../../core/theme.js';
 import * as KM from './algo.js';
-import { DATASETS, findDataset, trickyStart, blobs } from './datasets.js';
+import { DATASETS, findDataset, trickyStart, blobs, LECTURE } from './datasets.js';
+import { Space } from '../../core/space.js';
+import { LabelOverlay, AxesOverlay } from '../../core/overlay.js';
+import { workedCard, table, note, para, step, fmt, fx, pt } from '../../core/worked.js';
 import { narration, PHASE_TRACK, intuitionTab, mathTab, challengesTab } from './content.js';
 
 const MAX_POINTS = 1500;
@@ -17,6 +20,8 @@ const INIT_INFO = {
   pp: 'Spreads the stars out: each new star prefers points far from the ones already placed. The default in most libraries.',
   random: 'Picks K random data points as the starting stars (the classic “Forgy” method). Fast, but sometimes unlucky.',
   spots: 'Drops the stars anywhere on the canvas — even in empty space. Watch out for stars that never get any points!',
+  farthest: 'The lecture’s “modified k-means”: start from the two points that are farthest apart, then keep adding the point farthest from the chosen ones.',
+  given: 'Using the starting centroids given on the slide: C1 = (3, 4) and C2 = (4, 5).',
 };
 
 export function mount(root) {
@@ -46,6 +51,8 @@ export function mount(root) {
     show: { regions: true, links: true, trails: true },
     busy: false,
     chartMode: 'inertia',
+    metric: 'euclidean',
+    lecture: false,
   };
 
   /* ---------------- three.js stage ---------------- */
@@ -62,6 +69,12 @@ export function mount(root) {
   brush.position.z = 5;
   brush.visible = false;
   stage.scene.add(brush);
+  const space = new Space();
+  const labels = new LabelOverlay(stage, lab.overlay);
+  const axes = new AxesOverlay(stage, lab.overlay, space, regions);
+  axes.setVisible(false);
+  const worked = workedCard();
+  worked.show(false);
 
   /* ---------------- Overlays ---------------- */
   const toastEl = h('div', { class: 'toast', role: 'status' });
@@ -90,7 +103,7 @@ export function mount(root) {
   });
 
   /* ---------------- Points helpers ---------------- */
-  const newPoint = (x, y, wait = 0) => ({ x, y, c: -1, col: GREY.clone(), s: 0, ts: 1, wait, delay: 0, pending: false });
+  const newPoint = (x, y, wait = 0, name = null) => ({ x, y, name, c: -1, col: GREY.clone(), s: 0, ts: 1, wait, delay: 0, pending: false });
   const targetColor = (p) => (p.c >= 0 ? COLORS[p.c % COLORS.length] : GREY);
   const centXY = () => S.cents.map((c) => ({ x: c.x, y: c.y }));
 
@@ -102,9 +115,13 @@ export function mount(root) {
   function initCentroids(custom) {
     const pts = S.points;
     const cs = custom
-      || (S.init === 'pp' ? KM.initPlusPlus(pts, S.K)
-        : S.init === 'random' ? KM.initRandomPoints(pts, S.K)
-          : KM.initRandomSpots(S.K));
+      || (S.init === 'given' && S.lecture && S.K === 2 ? LECTURE.given.map((c) => space.w(c))
+        : S.init === 'pp' ? KM.initPlusPlus(pts, S.K)
+          : S.init === 'random' ? KM.initRandomPoints(pts, S.K)
+            : S.init === 'farthest' ? KM.initFarthest(pts, S.K, S.metric)
+              : S.init === 'given' ? KM.initPlusPlus(pts, S.K)
+                : KM.initRandomSpots(S.K));
+    S.prevCents = null;
     S.cents = cs.map((c) => ({ x: c.x, y: c.y, dx: c.x, dy: c.y, hist: [], drag: false }));
     stars.setCount(0, PALETTE);
     stars.setCount(S.cents.length, PALETTE);
@@ -118,7 +135,7 @@ export function mount(root) {
     const cents = centXY();
     let changed = 0;
     for (const p of S.points) {
-      const [k] = KM.nearest(p, cents);
+      const [k] = KM.nearest(p, cents, S.metric);
       if (p.c !== k) {
         changed++;
         p.c = k;
@@ -154,6 +171,7 @@ export function mount(root) {
       return true;
     }
     // assign / edited → update
+    S.prevCents = centXY();
     const { next, empty, maxShift } = KM.update(S.points, centXY());
     S.cents.forEach((c, k) => {
       c.hist.push({ x: c.x, y: c.y });
@@ -186,7 +204,7 @@ export function mount(root) {
     if (S.cents.length && S.phase !== 'init') {
       const cents = centXY();
       for (const p of S.points) {
-        const [k] = KM.nearest(p, cents);
+        const [k] = KM.nearest(p, cents, S.metric);
         if (p.c !== k) { p.c = k; p.delay = 0; }
       }
       setPhase('edited');
@@ -199,7 +217,43 @@ export function mount(root) {
   }
 
   /* ---------------- Data loading ---------------- */
+  function leaveLecture() {
+    if (!S.lecture) return;
+    S.lecture = false;
+    space.setIdentity();
+    axes.setVisible(false);
+    if (S.init === 'given') { S.init = 'pp'; initSeg.set('pp'); initHint.textContent = INIT_INFO.pp; }
+  }
+
+  function loadLecture() {
+    player.pause();
+    S.lecture = true;
+    S.dataset = 'lecture';
+    space.fit(LECTURE.points, { box: 0.62 });
+    S.points = LECTURE.points.map((q, i) => { const w = space.w(q); return newPoint(w.x, w.y, i * 0.08, q.name); });
+    axes.setVisible(true);
+    datasetChips.forEach((b) => b.classList.toggle('active', b.dataset.id === 'lecture'));
+    datasetNote.innerHTML = 'Slide example: 5 points, k = 2, starting centroids C1 = (3, 4), C2 = (4, 5). It should converge after 3 iterations to C1 = (3, 5), C2 = (5.5, 7).';
+    S.K = 2; kSlider.set(2); paintKDots();
+    S.init = 'given'; initSeg.set('given'); initHint.textContent = INIT_INFO.given;
+    setMetric('euclidean', true);
+    resetAlgo();
+    scheduleElbow(true);
+  }
+
+  function setMetric(v, silent) {
+    S.metric = v;
+    metricSeg.set(v);
+    regions.setMetric(v);
+    if (!silent) {
+      if (S.cents.length && S.phase !== 'init') afterEdit();
+      else refreshUI();
+      toast(v === 'manhattan' ? 'Manhattan distance: |Δx| + |Δy| — borders become zig-zags' : 'Euclidean distance: straight-line');
+    }
+  }
+
   function loadDataset(id, { keepK = true } = {}) {
+    leaveLecture();
     S.dataset = id;
     const ds = findDataset(id);
     setPoints(ds.make(S.n));
@@ -237,7 +291,8 @@ export function mount(root) {
   const addPoint = (x, y) => {
     if (S.points.length >= MAX_POINTS) { toast(`That’s the max (${MAX_POINTS} points)`); return -1; }
     const p = newPoint(x, y);
-    if (S.cents.length && S.phase !== 'init') { p.c = KM.nearest(p, centXY())[0]; p.col.copy(targetColor(p)); }
+    if (S.cents.length && S.phase !== 'init') { p.c = KM.nearest(p, centXY(), S.metric)[0]; p.col.copy(targetColor(p)); }
+    if (S.lecture) p.name = 'P' + (S.points.length + 1);
     S.points.push(p);
     return S.points.length - 1;
   };
@@ -388,8 +443,14 @@ export function mount(root) {
     trails.setVisible(S.show.trails);
     if (S.show.trails) trails.sync(S.cents.map((c, i) => ({ hist: c.hist, head: { x: c.dx, y: c.dy }, color: PALETTE[i % PALETTE.length] })));
 
-    const r = S.tool === 'erase' ? 0.075 : 0.075;
-    brush.scale.setScalar(r);
+    brush.scale.setScalar(0.075);
+    axes.update();
+    const tags = [];
+    if (S.lecture || S.points.length <= 12) {
+      S.points.forEach((p) => { if (p.name) tags.push({ x: p.x, y: p.y, text: p.name }); });
+      if (S.lecture) S.cents.forEach((c, i) => tags.push({ x: c.dx, y: c.dy, text: `C${i + 1} ${pt(space.d(c), 2)}`, cls: 'cent', dx: 14, dy: 4 }));
+    }
+    labels.update(tags);
   });
 
   /* ---------------- Controls (left) ---------------- */
@@ -398,6 +459,8 @@ export function mount(root) {
     h('button', { type: 'button', class: 'chip', 'data-id': d.id, onclick: () => { player.pause(); loadDataset(d.id); } },
       h('span', { class: 'emo' }, d.emoji), d.label),
   );
+  const lectureChip = h('button', { type: 'button', class: 'chip chip-lecture', 'data-id': 'lecture', onclick: () => loadLecture() }, h('span', { class: 'emo' }, '📝'), '5 points · k = 2');
+  datasetChips.push(lectureChip);
   const nSlider = slider({
     label: 'Number of points', min: 40, max: 800, step: 20, value: S.n,
     onInput: (v) => { S.n = v; },
@@ -427,9 +490,21 @@ export function mount(root) {
       { value: 'pp', label: 'K-Means++' },
       { value: 'random', label: 'Random pts' },
       { value: 'spots', label: 'Anywhere' },
+      { value: 'farthest', label: 'Farthest' },
+      { value: 'given', label: '📝 Slide' },
     ],
     value: S.init,
-    onChange: (v) => { S.init = v; initHint.textContent = INIT_INFO[v]; resetAlgo(); toast('New starting method — press ▶'); },
+    wrap: true,
+    onChange: (v) => {
+      if (v === 'given' && !S.lecture) { toast('“Slide” start is for the lecture example'); initSeg.set(S.init); return; }
+      S.init = v; initHint.textContent = INIT_INFO[v]; resetAlgo(); toast('New starting method — press ▶');
+    },
+  });
+  const metricSeg = segmented({
+    label: 'Distance',
+    options: [{ value: 'euclidean', label: '📏 Euclidean' }, { value: 'manhattan', label: '🏙️ Manhattan' }],
+    value: S.metric,
+    onChange: (v) => setMetric(v),
   });
 
   const tRegions = toggle({ label: 'Colored regions', emoji: '🗺️', value: S.show.regions, onChange: (v) => (S.show.regions = v) });
@@ -439,7 +514,8 @@ export function mount(root) {
   const num = (n) => h('span', { class: 'num' }, n);
   lab.controls.append(
     section([num(1), 'Data'],
-      h('div', { class: 'chips' }, datasetChips),
+      h('div', { class: 'chips' }, datasetChips.slice(0, -1)),
+      h('div', { class: 'lecture-row' }, h('span', { class: 'field-label' }, 'From the lecture'), h('div', { class: 'chips chips-lecture' }, lectureChip)),
       datasetNote,
       nSlider.el,
       button('🔄 New sample', () => { player.pause(); loadDataset(S.dataset); }, { variant: 'btn-block' }),
@@ -447,13 +523,14 @@ export function mount(root) {
     section([num(2), 'Draw your own'],
       toolSeg.el,
       h('span', { class: 'hint', html: 'Drag any point or ★ to move it. The algorithm reacts live.' }),
-      button('🗑️ Clear canvas', () => { player.pause(); S.points = []; resetAlgo(); datasetChips.forEach((b) => b.classList.remove('active')); S.dataset = 'blank'; scheduleElbow(true); }, { variant: 'btn-ghost btn-block' }),
+      button('🗑️ Clear canvas', () => { player.pause(); leaveLecture(); S.points = []; resetAlgo(); datasetChips.forEach((b) => b.classList.remove('active')); S.dataset = 'blank'; scheduleElbow(true); }, { variant: 'btn-ghost btn-block' }),
     ),
     section([num(3), 'K-Means settings'],
       kSlider.el,
       kDots,
       initSeg.el,
       initHint,
+      metricSeg.el,
     ),
     section([num(4), 'Show'],
       tRegions.el, tLinks.el, tTrails.el,
@@ -506,7 +583,7 @@ export function mount(root) {
     { id: 'try', label: '🎯 Try this', render: () => challengesTab(challengeActions) },
   ]);
   const learnCard = h('div', { class: 'card side-card' }, h('h3', {}, '📚 Learn'), learnTabs.el);
-  lab.side.append(numbersCard, learnCard);
+  lab.side.append(numbersCard, worked.el, learnCard);
 
   /* ---------------- Elbow ---------------- */
   let elbowData = null;
@@ -596,6 +673,83 @@ export function mount(root) {
 
     emptyEl.style.opacity = S.points.length ? 0 : 1;
     updateChart();
+    renderWorked();
+  }
+
+  /* ---------------- Worked example (lecture tables) ---------------- */
+  function renderWorked() {
+    const N = S.points.length;
+    const show = S.lecture || (N > 0 && N <= 10);
+    worked.show(show);
+    if (!show) return;
+    const D = (a, b) => (S.metric === 'manhattan' ? KM.manhattan(a, b) : Math.sqrt(KM.dist2(a, b))) * space.s;
+    const nm = (i) => S.points[i].name || `P${i + 1}`;
+    const dp = (p) => space.d(p);
+    const parts = [];
+    const pairTable = () => {
+      let bi = 0, bj = 1, bd = -1;
+      const rows = S.points.map((p, i) => [{ v: nm(i), cls: 'rh' }, ...S.points.map((q, j) => {
+        const d = D(p, q);
+        if (j > i && d > bd + 1e-9) { bd = d; bi = i; bj = j; }
+        return { v: i === j ? '0' : fx(d), cls: i === j ? 'diag' : '' };
+      })]);
+      rows[bi][bj + 1].cls = 'hl'; rows[bj][bi + 1].cls = 'hl';
+      parts.push(step(`Pairwise distances (${S.metric})`));
+      parts.push(table(['', ...S.points.map((_, i) => nm(i))], rows));
+      parts.push(para(`Maximum distance: d(${nm(bi)}, ${nm(bj)}) = <b>${fx(bd)}</b> → the two farthest points become the starting centroids.`));
+    };
+
+    if (S.phase === 'empty' || S.phase === 'ready') {
+      parts.push(para(S.lecture ? 'Press <b>Step</b> to place the starting centroids C1 = (3, 4) and C2 = (4, 5).' : 'Press <b>Step</b> to place the starting centroids.'));
+      if (S.init === 'farthest' && N >= 2) pairTable();
+    }
+    if (S.phase === 'init') {
+      if (S.init === 'farthest') pairTable();
+      parts.push(step('Starting centroids'));
+      parts.push(para(S.cents.map((c, i) => `C${i + 1}<sup>(0)</sup> = <b>${pt(dp(c))}</b>`).join(', ')));
+    }
+    if (['assign', 'converged', 'edited'].includes(S.phase) && S.cents.length) {
+      const C = S.cents.map((c) => ({ x: c.x, y: c.y }));
+      parts.push(step(S.phase === 'converged' ? `Iteration ${S.iter + 1}: nothing changes` : `Iteration ${S.iter + 1}: distances and clusters`));
+      parts.push(para('Current centroids: ' + C.map((c, i) => `C${i + 1} = ${pt(dp(c))}`).join(', ')));
+      parts.push(table(['Point', ...C.map((_, k) => `d to C${k + 1}`), 'Cluster'], S.points.map((p, i) => {
+        const ds = C.map((c) => D(p, c));
+        const best = Math.min(...ds);
+        const ties = ds.filter((d) => Math.abs(d - best) < 1e-9).length > 1;
+        return [{ v: S.lecture ? pt(dp(p), 0) : nm(i), cls: 'rh' }, ...ds.map((d, k) => ({ v: fx(d), cls: k === p.c ? 'ok' : '' })), p.c >= 0 ? `C${p.c + 1}${ties ? ` (tie → C${p.c + 1})` : ''}` : '–'];
+      })));
+      const groups = C.map((_, k) => S.points.map((p, i) => (p.c === k ? (S.lecture ? pt(dp(p), 0) : nm(i)) : null)).filter(Boolean));
+      parts.push(para(groups.map((g, k) => `C${k + 1} = {${g.join(', ')}}`).join('<br>')));
+    }
+    if (S.phase === 'update' && S.prevCents) {
+      parts.push(step(`Iteration ${S.iter}: new centroids`));
+      const lines = S.cents.map((c, k) => {
+        const mem = S.points.filter((p) => p.c === k).map(dp);
+        if (!mem.length) return `C${k + 1}: no points → stays at ${pt(dp(c))}`;
+        const xs = mem.map((m) => fmt(m.x)).join(' + '), ys = mem.map((m) => fmt(m.y)).join(' + ');
+        return `C${k + 1} = ((${xs}) / ${mem.length}, (${ys}) / ${mem.length}) = <b>${pt(dp(c))}</b>`;
+      });
+      parts.push(h('div', { class: 'w-lines', html: lines.join('<br>') }));
+      if (S.metric === 'manhattan') parts.push(note('With Manhattan distance the centroid is still the <b>mean</b> here (as on the slides). Strictly, the best centre for Manhattan distance is the <i>median</i> — that variant is called k-medians.', 'info'));
+    }
+    if (S.phase === 'converged') {
+      parts.push(note(`Recomputing the centroids gives the same values → <b>converged</b>. Final centroids: ${S.cents.map((c, k) => `C${k + 1} = ${pt(dp(c))}`).join(', ')}.`, 'info'));
+      if (S.lecture && S.cents.length === 2) {
+        const q = LECTURE.newPoint;
+        const C = S.cents.map(dp);
+        const dd = C.map((c) => (S.metric === 'manhattan' ? KM.manhattan(q, c) : Math.hypot(q.x - c.x, q.y - c.y)));
+        const k = dd[0] <= dd[1] ? 0 : 1;
+        parts.push(step('New point (2, 7) — which cluster?'));
+        parts.push(para(dd.map((d, i) => `d((2, 7), C${i + 1}) = ${fx(d)}`).join('<br>') + `<br>Since ${fx(dd[k])} &lt; ${fx(dd[1 - k])}, it belongs to <b>Cluster ${k + 1}</b>.`));
+        const already = S.points.some((p) => { const d = dp(p); return Math.abs(d.x - 2) < 1e-6 && Math.abs(d.y - 7) < 1e-6; });
+        if (!already) parts.push(button('➕ Add (2, 7) to the canvas', () => {
+          const w = space.w(q);
+          const i = addPoint(w.x, w.y);
+          if (i >= 0) { S.points[i].name = 'new'; afterEdit(); toast('Added (2, 7) — it joins its nearest ★'); }
+        }, { variant: 'btn-primary' }));
+      }
+    }
+    worked.set(parts, `${S.metric} · K = ${S.K}`);
   }
 
   function updateTip() {

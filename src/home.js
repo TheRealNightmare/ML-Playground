@@ -1,5 +1,5 @@
 import { h } from './core/ui.js';
-import { ALGORITHMS } from './algorithms/index.js';
+import { ALGORITHMS, SECTIONS } from './algorithms/index.js';
 
 const SITE = {
   author: 'Mirazul Islam Nahid',
@@ -33,27 +33,32 @@ const ART = {
 };
 
 export function mountHome(root) {
-  const cards = ALGORITHMS.map((a) =>
-    h('a', { class: 'algo-card card', href: `#/${a.id}`, style: { '--accent': a.accent } },
-      h('div', { class: 'algo-art', html: ART[a.id] || '' }),
-      h('div', { class: 'algo-body' },
-        h('div', { class: 'algo-tags' }, h('span', { class: 'tag tag-cat' }, a.category), h('span', { class: 'tag tag-level' }, a.level)),
-        h('h3', { class: 'algo-title' }, a.emoji + ' ' + a.title),
-        h('p', { class: 'algo-tagline' }, a.tagline),
-        h('span', { class: 'algo-cta' }, 'Open the playground →'),
+  const card = (a) => {
+    const art = ART[a.id]
+      ? h('div', { class: 'algo-art', html: ART[a.id] })
+      : h('div', { class: 'algo-art algo-art-emoji' }, h('span', {}, a.emoji));
+    const body = h('div', { class: 'algo-body' },
+      h('div', { class: 'algo-tags' }, h('span', { class: 'tag tag-cat' }, a.category), h('span', { class: 'tag tag-level' }, a.level)),
+      h('h3', { class: 'algo-title' }, a.emoji + ' ' + a.title),
+      h('p', { class: 'algo-tagline' }, a.tagline),
+      h('span', { class: 'algo-cta' }, a.soon ? '🛠️ Coming soon' : 'Open the playground →'),
+    );
+    return a.soon
+      ? h('div', { class: 'algo-card card soon', style: { '--accent': a.accent } }, art, body)
+      : h('a', { class: 'algo-card card', href: `#/${a.id}`, style: { '--accent': a.accent } }, art, body);
+  };
+  const sections = SECTIONS.map((sec) => {
+    const list = ALGORITHMS.filter((a) => a.section === sec.id);
+    if (!list.length) return null;
+    return h('section', { class: 'algo-section', id: 'sec-' + sec.id },
+      h('div', { class: 'section-head' },
+        h('h2', { class: 'section-title' }, sec.emoji + ' ' + sec.title),
+        h('p', { class: 'section-blurb' }, sec.blurb),
       ),
-    ),
-  );
-
-  cards.push(
-    h('div', { class: 'algo-card card soon' },
-      h('div', { class: 'algo-art soon-art' }, h('span', {}, '🧪')),
-      h('div', { class: 'algo-body' },
-        h('h3', { class: 'algo-title' }, 'More on the way'),
-        h('p', { class: 'algo-tagline' }, 'New algorithms are added one at a time. Check back soon!'),
-      ),
-    ),
-  );
+      h('div', { class: 'algo-grid' }, list.map(card)),
+    );
+  });
+  const live = ALGORITHMS.filter((a) => !a.soon).length;
 
   const el = h('div', { class: 'home' },
     h('section', { class: 'hero' },
@@ -73,10 +78,8 @@ export function mountHome(root) {
         how('📐', 'Understand', 'Switch between the intuition and the equations whenever you like.'),
       ),
     ),
-    h('section', { class: 'algo-section' },
-      h('h2', { class: 'section-title' }, 'Playgrounds'),
-      h('div', { class: 'algo-grid' }, cards),
-    ),
+    h('p', { class: 'count-line' }, `${live} playgrounds live · ${ALGORITHMS.length - live} more on the way`),
+    sections,
     h('footer', { class: 'site-footer' },
       h('span', {}, 'Made by ', h('a', { href: SITE.portfolio, target: '_blank', rel: 'noopener' }, SITE.author)),
       h('span', { class: 'dot-sep' }, '•'),

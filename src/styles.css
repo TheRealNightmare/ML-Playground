@@ -304,6 +304,7 @@ a.algo-card:hover { transform: translate(-2px, -3px); box-shadow: 7px 8px 0 var(
   padding: 4px 10px; font-size: 12.5px; font-weight: 700; color: var(--ink-soft);
   transition: opacity .3s;
 }
+.has-axes .stage-tip { display: none; }
 .stage-empty {
   position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; transition: opacity .3s;
 }
@@ -374,6 +375,84 @@ a.algo-card:hover { transform: translate(-2px, -3px); box-shadow: 7px 8px 0 var(
 .challenge details { margin-top: 8px; font-size: 13.5px; }
 .challenge summary { cursor: pointer; font-weight: 800; color: var(--grape); }
 .challenge details p { margin-top: 6px; color: var(--ink); }
+
+
+/* ---------------- Home sections ---------------- */
+.count-line { font-weight: 800; color: var(--muted); margin: 6px 0 0; }
+.algo-section { margin-top: 26px; }
+.section-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin: 6px 0 14px; }
+.section-head .section-title { margin: 0; }
+.section-blurb { color: var(--ink-soft); font-weight: 600; }
+.algo-art-emoji { font-size: 64px; background-image: radial-gradient(rgba(43,34,64,.14) 1.6px, transparent 1.6px); background-size: 16px 16px; background-color: var(--accent); }
+.algo-art-emoji span { filter: drop-shadow(3px 3px 0 rgba(43,34,64,.25)); }
+.soon .algo-art-emoji { opacity: .55; }
+.soon .algo-cta { color: var(--muted); }
+
+/* ---------------- Lecture chips ---------------- */
+.lecture-row { margin-top: 12px; }
+.chips-lecture { grid-template-columns: 1fr; }
+.chip-lecture { background: #f1e9ff; border-style: dashed; }
+.chip-lecture:hover { background: #e6d9ff; }
+.chip-lecture.active { background: var(--grape); color: #fff; border-style: solid; }
+.seg-wrap.disabled { opacity: .45; pointer-events: none; }
+
+/* ---------------- Overlays: labels & axes ---------------- */
+.label-layer, .axes-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.pt-label {
+  position: absolute; left: 0; top: 0; white-space: nowrap; will-change: transform;
+  font-size: 12px; font-weight: 800; color: var(--ink); padding: 0 5px; border-radius: 6px;
+  background: rgba(255,255,255,.88); border: 1.5px solid var(--ink);
+}
+.pt-label.far { background: #fff1d6; border-style: dashed; }
+.pt-label.cent { background: var(--ink); color: #fff; font-size: 11px; }
+.pt-label.tip { background: var(--ink); color: #fff; font-size: 11.5px; padding: 2px 7px; }
+.pt-label.soft { border: 0; background: transparent; color: var(--ink-soft); }
+.ax-tick { position: absolute; font-size: 11px; font-weight: 700; color: var(--muted); background: rgba(255,248,236,.85); padding: 0 3px; border-radius: 4px; }
+.ax-x { bottom: 4px; transform: translateX(-50%); }
+.ax-y { left: 4px; transform: translateY(-50%); }
+
+/* ---------------- Worked example ---------------- */
+.worked-card { border-color: var(--grape); box-shadow: 4px 4px 0 var(--grape); }
+.worked-card h3 { flex-wrap: wrap; }
+.worked-sub { margin-left: auto; font-family: var(--font-body); font-size: 11.5px; font-weight: 800; color: #fff; background: var(--grape); border-radius: 999px; padding: 1px 9px; }
+.worked-body { font-size: 13.5px; }
+.worked-body > * + * { margin-top: 8px; }
+.w-step { font-family: var(--font-head); font-weight: 600; font-size: 15px; color: var(--grape); margin-top: 12px !important; }
+.w-step:first-child { margin-top: 0 !important; }
+.w-p { color: var(--ink-soft); }
+.w-p b, .w-lines b { color: var(--ink); }
+.w-lines { font-size: 12.5px; line-height: 1.7; background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px; padding: 6px 10px; overflow-x: auto; white-space: nowrap; }
+.w-note { font-size: 12.5px; border: 2px dashed var(--ink); border-radius: 10px; padding: 7px 10px; background: #fff8e1; }
+.w-note.warn { background: #ffecec; border-color: var(--coral); }
+.w-note.info { background: #e2f8f5; border-color: var(--mint); }
+.wt-wrap { overflow-x: auto; }
+.wt { border-collapse: separate; border-spacing: 0; font-size: 12px; min-width: 100%; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; }
+.wt caption { caption-side: top; text-align: left; font-weight: 800; padding-bottom: 4px; }
+.wt th { background: var(--ink); color: #fff; font-weight: 800; padding: 4px 7px; text-align: center; white-space: nowrap; }
+.wt td { padding: 3px 7px; text-align: center; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wt td.rh { font-weight: 800; background: #f6efe2; text-align: left; }
+.wt td.diag { color: #c8bfae; }
+.wt td.hl { background: var(--sun); font-weight: 800; box-shadow: inset 0 0 0 2px var(--ink); }
+.wt td.ok { background: #d9f7f1; font-weight: 800; }
+.wt td.bad { background: #ffe1e1; font-weight: 800; }
+.wt td.dim { color: #c8bfae; }
+.wt tr.cur td { background: #f1e9ff; }
+.wt td .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); vertical-align: -1px; margin-right: 4px; }
+
+/* ---------------- Dendrogram & misc charts ---------------- */
+.dendro, .side-canvas { display: block; width: 100%; touch-action: none; }
+.stats-2 { grid-template-columns: repeat(2, 1fr); }
+.stats-4 { grid-template-columns: repeat(4, 1fr); }
+.stats-4 .stat-value { font-size: 17px; }
+.member-bars { display: grid; gap: 4px; margin-top: 8px; }
+.member-bar { display: grid; grid-template-columns: 70px 1fr 44px; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; }
+.member-bar .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); vertical-align: -1px; }
+.member-bar .track { height: 12px; border: 1.5px solid var(--ink); border-radius: 6px; background: var(--paper); overflow: hidden; }
+.member-bar .fill { height: 100%; transition: width .25s; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; font-weight: 700; color: var(--ink-soft); margin-top: 6px; }
+.legend-row i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--ink); margin-right: 5px; vertical-align: -1px; }
+.legend-row i.ring { background: #fff !important; border-color: #9b9384; }
+.legend-row i.small { width: 8px; height: 8px; }
 
 /* ---------------- Loading ---------------- */
 .loading { display: flex; gap: 10px; align-items: center; justify-content: center; min-height: 50vh; font-weight: 800; color: var(--muted); }

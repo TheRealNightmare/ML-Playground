@@ -1,21 +1,26 @@
 // Pure K-Means logic. Points are { x, y, c } where c is the cluster index (-1 = none).
 
 export const dist2 = (a, b) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+export const manhattan = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+/** Distance used for assignment: 'euclidean' (default) or 'manhattan'. */
+export const metricDist = (metric) => (metric === 'manhattan' ? manhattan : (a, b) => Math.sqrt(dist2(a, b)));
 
-export function nearest(p, cents) {
+/** Nearest centroid. Ties go to the lower index (as on the slides: "tie → C1"). */
+export function nearest(p, cents, metric = 'euclidean') {
+  const d = metricDist(metric);
   let bi = -1, bd = Infinity;
   for (let k = 0; k < cents.length; k++) {
-    const d = dist2(p, cents[k]);
-    if (d < bd) { bd = d; bi = k; }
+    const v = d(p, cents[k]);
+    if (v < bd - 1e-9) { bd = v; bi = k; }
   }
-  return [bi, bd];
+  return [bi, metric === 'manhattan' ? bd : bd * bd];
 }
 
 /** Assignment step: every point joins its nearest centroid. Returns how many changed. */
-export function assign(points, cents) {
+export function assign(points, cents, metric = 'euclidean') {
   let changed = 0;
   for (const p of points) {
-    const [k] = nearest(p, cents);
+    const [k] = nearest(p, cents, metric);
     if (p.c !== k) { p.c = k; changed++; }
   }
   return changed;
@@ -85,6 +90,30 @@ export function initPlusPlus(points, K, rand = Math.random) {
     out.push(c);
     for (let i = 0; i < points.length; i++) D[i] = Math.min(D[i], dist2(points[i], c));
   }
+  return out;
+}
+
+/** "Modified k-means" from the lecture: start with the two farthest points, then keep adding the point farthest from all chosen ones. */
+export function initFarthest(points, K, metric = 'euclidean', rand = Math.random) {
+  const d = metricDist(metric);
+  if (points.length < 2) return initRandomSpots(K, rand);
+  let bi = 0, bj = 1, bd = -1;
+  for (let i = 0; i < points.length; i++) for (let j = i + 1; j < points.length; j++) {
+    const v = d(points[i], points[j]);
+    if (v > bd + 1e-9) { bd = v; bi = i; bj = j; }
+  }
+  const chosen = [bi, bj].slice(0, K);
+  while (chosen.length < K && chosen.length < points.length) {
+    let best = -1, bv = -1;
+    points.forEach((p, i) => {
+      if (chosen.includes(i)) return;
+      const m = Math.min(...chosen.map((c) => d(p, points[c])));
+      if (m > bv) { bv = m; best = i; }
+    });
+    chosen.push(best);
+  }
+  const out = chosen.map((i) => ({ x: points[i].x, y: points[i].y }));
+  while (out.length < K) out.push(randomSpot(rand));
   return out;
 }
 

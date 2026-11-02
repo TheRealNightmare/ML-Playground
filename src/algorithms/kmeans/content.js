@@ -21,7 +21,7 @@ export const PHASE_TRACK = [
 
 export function narration(S) {
   const K = S.cents.length || S.K;
-  const initName = { random: 'random data points', pp: 'K-Means++', spots: 'random spots' }[S.init];
+  const initName = { random: 'random data points', pp: 'K-Means++', spots: 'random spots', farthest: 'the two farthest points (modified k-means)', given: 'the starting centroids from the slide' }[S.init];
   switch (S.phase) {
     case 'empty':
       return { emoji: '👋', title: 'Give me some data!', text: 'Pick a dataset on the left, or <b>click on the canvas</b> to drop points yourself. Drag to spray a few in a row.' };
@@ -122,6 +122,10 @@ export function mathTab() {
     P('Pick the first centroid at random. Then pick each next one with probability proportional to its squared distance $D(x)^2$ from the nearest centroid already chosen:'),
     eq('P(x) = \\frac{D(x)^2}{\\sum_{x\'} D(x\')^2}'),
     P('Far-away points are more likely to be picked, so the stars start spread out and bad starts become rare.'),
+    h('h4', {}, 'Other distances'),
+    P('The slides also use <b>Manhattan</b> distance $d = |x_2 - x_1| + |y_2 - y_1|$. Switch “Distance” to see how the borders between clusters turn into zig-zags. (With Manhattan distance the truly optimal centre is the median, which gives the k-medians algorithm.)'),
+    h('h4', {}, 'Modified k-means (smart start)'),
+    P('Compute all pairwise distances and start from the two points that are farthest apart. For more than two clusters, keep adding the point whose nearest chosen centroid is farthest away. Pick “Farthest” under Starting positions.'),
     h('h4', {}, 'Cost'),
     P('Each round costs $O(nKd)$ for $n$ points, $K$ clusters and $d$ dimensions (here $d = 2$).'),
     h('h4', {}, 'Choosing K: the elbow method'),

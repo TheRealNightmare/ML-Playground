@@ -32,12 +32,45 @@ It is written for two audiences at once:
 
 ## 🧪 Playgrounds
 
-| | Algorithm | Type | Status |
+| | Playground | Type | Status |
 |---|---|---|---|
 | ⭐ | [K-Means Clustering](https://ml.mirazulislamnahid.com/#/kmeans) | Unsupervised · Clustering | ✅ Live |
-| 🧪 | More algorithms | — | 🚧 Added one at a time |
+| 🌳 | [Hierarchical Clustering](https://ml.mirazulislamnahid.com/#/hierarchical) | Unsupervised · Clustering | ✅ Live |
+| 🌈 | [Fuzzy C-Means](https://ml.mirazulislamnahid.com/#/fcm) | Unsupervised · Soft clustering | ✅ Live |
+| 🔍 | [DBSCAN](https://ml.mirazulislamnahid.com/#/dbscan) | Unsupervised · Density | ✅ Live |
+| 🏔️ | [HDBSCAN](https://ml.mirazulislamnahid.com/#/hdbscan) | Unsupervised · Density | ✅ Live |
+| 🌲 | Decision Tree · Random Forest · Ensemble Learning | Trees & Ensembles | 🚧 Next |
+| ⚡ | AdaBoost · XGBoost · CatBoost | Boosting | 🚧 Planned |
+| 🔁 | Cross-Validation | Model Evaluation | 🚧 Planned |
+
+### 📝 Lecture mode
+
+Every playground has **“From the lecture”** examples that load the exact worked examples from the course slides — same points, same settings — and a **Worked example** card that rebuilds the slide tables live as you step: distance matrices, centroid formulas, membership tables, ε-neighbourhoods, core distances, spanning-tree edges. Axes switch to the slide’s units so every number matches. Where a slide step is inconsistent, the card shows the correct value with a short 📌 note explaining the difference.
+
+### 🌳 Hierarchical Clustering
+- Agglomerative merging with **single, complete, average or centroid** linkage and **Euclidean or Manhattan** distance.
+- Live **dendrogram** that grows with each merge; drag the ✂ cut line (or set K) to choose clusters.
+- Lecture: 5 points with Manhattan + centroid linkage (heights 1, 2, 5.5, 10.75), the A–E distance-table exercise (single link), and the A1–B2 practice question.
+
+### 🌈 Fuzzy C-Means
+- Soft memberships shown as **blended colors** and a live **membership field** in the background.
+- Fuzziness **m** slider, stopping tolerance ε, hover any point for its membership bars, toggle hard (argmax) labels.
+- Lecture: the 1D example (x = 1, 2, 7, 8) and the 2D three-point example with the given U⁽⁰⁾.
+
+### 🔍 DBSCAN
+- Visits one point per step: ε-circle, neighbour lines, **core / border / noise** classification, cluster expansion queue.
+- **k-distance plot** with the current ε, live re-run when ε or minPts change.
+- Lecture: points A–J with ε = 1.5, minPts = 3 and the highlighted distance table.
+
+### 🏔️ HDBSCAN
+- Core distances → mutual reachability → **minimum spanning tree** (animated) → **condensed tree** with stability.
+- Two extraction modes: **Stability** (real HDBSCAN, excess of mass) and **Threshold cut** (the slide method).
+- Lecture: points A–F with k = 2, reproducing the core distances, MST and the ε = 7 cut.
 
 ### ⭐ K-Means Clustering
+
+Lecture extras: the 5-point example with the slide’s starting centroids, iteration tables, the new-point (2, 7) question, **Manhattan** distance, and the **farthest-pair** (“modified k-means”) start.
+
 
 **See it work**
 - Points change color in a ripple spreading out from their nearest centroid (the ★).
@@ -103,8 +136,14 @@ ML-Playground/
 │   ├── home.js              # landing page + algorithm cards
 │   ├── styles.css           # the playful theme
 │   ├── core/                # shared by every simulation
+│   │   ├── pointlab.js      # scaffold for 2D point playgrounds: tools, datasets, lecture mode, narrator
 │   │   ├── stage.js         # three.js orthographic 2D stage, pointer → world coords
-│   │   ├── layers.js        # points, centroid stars, Voronoi region shader, links, trails
+│   │   ├── space.js         # slide units ↔ canvas units
+│   │   ├── overlay.js       # point name tags and axes in slide units
+│   │   ├── worked.js        # tables and notes for the worked-example card
+│   │   ├── datasets.js      # shared 2D datasets
+│   │   ├── tex.js           # KaTeX helpers
+│   │   ├── layers.js        # points, stars, region shader (hard/fuzzy, Euclid/Manhattan), circles, segments, trails
 │   │   ├── player.js        # play / pause / step / reset / speed + keyboard shortcuts
 │   │   ├── chart.js         # tiny canvas line & bar chart
 │   │   ├── lab.js           # 3-column lab page layout
@@ -112,11 +151,11 @@ ML-Playground/
 │   │   └── theme.js         # one color palette for CSS and three.js
 │   └── algorithms/
 │       ├── index.js         # registry of all playgrounds
-│       └── kmeans/
-│           ├── kmeans.js    # page: state, animation, interaction, UI
-│           ├── algo.js      # pure K-Means math (assign, update, inits, elbow)
-│           ├── datasets.js  # preset datasets
-│           └── content.js   # narrator lines + Intuition / Math / Try-this tabs
+│       ├── kmeans/          # page, pure algorithm, datasets, learn content
+│       ├── hierarchical/
+│       ├── fcm/
+│       ├── dbscan/
+│       └── hdbscan/         # each folder: <id>.js (page) + algo.js (pure math) + content.js
 ├── Dockerfile               # Node build → nginx serve
 └── nginx.conf
 ```
@@ -125,7 +164,7 @@ No UI framework: plain ES modules, three.js for the canvas and KaTeX for equatio
 
 ## ➕ Adding a new algorithm
 
-1. Create `src/algorithms/<id>/<id>.js` and export `mount(root)`, which builds the page and returns an `unmount()` cleanup function.
+1. Create `src/algorithms/<id>/<id>.js` and export `mount(root)`, which builds the page and returns an `unmount()` cleanup function. For point-based algorithms, start from `createPointLab()` — it gives you drawing tools, datasets, lecture mode and the layout; you fill in `L.hooks` (`reset`, `step`, `frame`, …). Keep the math in a pure `algo.js` so it can be checked in Node against the slide numbers.
 2. Build it from the shared pieces in `src/core/`:
    - `createLab()` for the page layout,
    - `Stage` for the three.js canvas,
@@ -172,8 +211,10 @@ This is how the live site is hosted:
 
 ## 🗺️ Roadmap
 
-- [x] K-Means clustering
-- [ ] More algorithms, added one at a time
+- [x] Clustering: K-Means, Hierarchical, Fuzzy C-Means, DBSCAN, HDBSCAN
+- [ ] Trees & Ensembles: Decision Tree, Random Forest, Ensemble Learning
+- [ ] Boosting: AdaBoost, XGBoost, CatBoost
+- [ ] Model Evaluation: Cross-Validation
 
 ## 👤 Author
 

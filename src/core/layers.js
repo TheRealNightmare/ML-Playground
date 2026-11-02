@@ -25,6 +25,11 @@ export class RegionBackground {
       uInk: { value: new THREE.Color(INK) },
       uPx: { value: 0.003 },
       uDomain: { value: stage.domain },
+      uMetric: { value: 0 }, // 0 = Euclidean, 1 = Manhattan
+      uFuzzy: { value: 0 }, // 0 = hard regions, 1 = Fuzzy C-Means membership field
+      uM: { value: 2 }, // fuzziness for the fuzzy field
+      uGrid: { value: 0.1 }, // dot-grid spacing (world)
+      uOrigin: { value: new THREE.Vector2(0, 0) }, // where the axes cross (world)
     };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -44,23 +49,48 @@ export class RegionBackground {
         uniform vec3 uBg, uDot, uInk;
         uniform float uPx;
         uniform float uDomain;
+        uniform int uMetric;
+        uniform float uFuzzy, uM, uGrid;
+        uniform vec2 uOrigin;
         varying vec2 vW;
+        float dist(vec2 a, vec2 b) {
+          vec2 d = abs(a - b);
+          return uMetric == 1 ? d.x + d.y : length(d);
+        }
         void main() {
           vec3 col = uBg;
-          // dot grid every 0.1 world units
-          vec2 g = abs(fract(vW / 0.1 + 0.5) - 0.5) * 0.1;
+          // dot grid
+          vec2 q = vW - uOrigin;
+          vec2 g = abs(fract(q / uGrid + 0.5) - 0.5) * uGrid;
           float d = length(g);
           float dotA = 1.0 - smoothstep(uPx * 1.1, uPx * 2.2, d);
           col = mix(col, uDot, dotA * 0.9);
           // axes through the origin
-          float ax = min(abs(vW.x), abs(vW.y));
+          float ax = min(abs(q.x), abs(q.y));
           col = mix(col, uDot, (1.0 - smoothstep(uPx * 0.6, uPx * 1.6, ax)) * 0.55);
 
-          if (uK > 0 && uRegion > 0.001) {
+          if (uK > 0 && uRegion > 0.001 && uFuzzy > 0.5) {
+            // Fuzzy C-Means membership field: blend cluster colors by membership
+            float p = 2.0 / max(uM - 1.0, 0.05);
+            vec3 mixed = vec3(0.0);
+            float dj[8];
+            for (int i = 0; i < 8; i++) { dj[i] = 1.0; if (i < uK) dj[i] = max(dist(vW, uC[i]), 1e-5); }
+            float best = 0.0;
+            for (int j = 0; j < 8; j++) {
+              if (j >= uK) break;
+              float s = 0.0;
+              for (int k = 0; k < 8; k++) { if (k >= uK) break; s += pow(dj[j] / dj[k], p); }
+              float u = 1.0 / s;
+              best = max(best, u);
+              mixed += u * uCol[j];
+            }
+            // stronger tint where one cluster dominates, paler where they overlap
+            col = mix(col, mixed, (0.10 + 0.16 * best) * uRegion);
+          } else if (uK > 0 && uRegion > 0.001) {
             float b1 = 1e9; float b2 = 1e9; int bi = 0; int bj = 0;
             for (int i = 0; i < 8; i++) {
               if (i >= uK) break;
-              float dd = distance(vW, uC[i]);
+              float dd = dist(vW, uC[i]);
               if (dd < b1) { b2 = b1; bj = bi; b1 = dd; bi = i; }
               else if (dd < b2) { b2 = dd; bj = i; }
             }
@@ -72,9 +102,14 @@ export class RegionBackground {
             }
             col = mix(col, rc, 0.17 * uRegion);
             if (uK > 1) {
-              // exact distance to the bisector between the two nearest centroids
-              float sep = max(distance(ca, cb), 1e-4);
-              float edgeDist = (b2 * b2 - b1 * b1) / (2.0 * sep);
+              float edgeDist;
+              if (uMetric == 1) {
+                edgeDist = (b2 - b1) * 0.5; // Manhattan: approximate distance to the border
+              } else {
+                // exact distance to the bisector between the two nearest centroids
+                float sep = max(distance(ca, cb), 1e-4);
+                edgeDist = (b2 * b2 - b1 * b1) / (2.0 * sep);
+              }
               float edge = 1.0 - smoothstep(uPx * 0.8, uPx * 2.2, edgeDist);
               col = mix(col, uInk, edge * 0.45 * uRegion);
             }
@@ -101,6 +136,12 @@ export class RegionBackground {
   }
 
   show(on) { this.target = on ? 1 : 0; }
+  setMetric(m) { this.uniforms.uMetric.value = m === 'manhattan' ? 1 : 0; }
+  setFuzzy(on, m = 2) { this.uniforms.uFuzzy.value = on ? 1 : 0; this.uniforms.uM.value = m; }
+  setGrid(spacing, origin) {
+    this.uniforms.uGrid.value = Math.max(spacing, 1e-4);
+    this.uniforms.uOrigin.value.set(origin.x, origin.y);
+  }
 
   update(dt) {
     const u = this.uniforms.uRegion;
@@ -118,21 +159,25 @@ export class PointLayer {
     this.max = max;
     this.radius = radius;
     const geo = new THREE.CircleGeometry(1, 24);
-    this.outline = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: INK }), max);
+    this.outline = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff }), max);
     this.fill = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff }), max);
     for (const m of [this.outline, this.fill]) {
       m.frustumCulled = false;
       m.count = 0;
       m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      m.setColorAt(0, new THREE.Color(1, 1, 1));
+      m.instanceColor.setUsage(THREE.DynamicDrawUsage);
     }
-    this.fill.setColorAt(0, new THREE.Color(1, 1, 1));
-    this.fill.instanceColor.setUsage(THREE.DynamicDrawUsage);
+    this.ink = new THREE.Color(INK);
     this.outline.position.z = 0;
     this.fill.position.z = 0.01;
     stage.scene.add(this.outline, this.fill);
   }
 
-  /** points: [{ x, y, s (scale), col (THREE.Color) }] */
+  /**
+   * points: [{ x, y, s (scale), col (THREE.Color), oc? (outline Color), fr? (fill ratio 0..1) }]
+   * A small fill ratio with a white fill draws a hollow ring (used for noise points).
+   */
   sync(points) {
     const n = Math.min(points.length, this.max);
     const r = this.radius;
@@ -143,7 +188,9 @@ export class PointLayer {
       _s.set(s, s, 1);
       _m.compose(_p, _q, _s);
       this.outline.setMatrixAt(i, _m);
-      _s.set(s * 0.66, s * 0.66, 1);
+      this.outline.setColorAt(i, p.oc || this.ink);
+      const fr = p.fr ?? 0.66;
+      _s.set(s * fr, s * fr, 1);
       _m.compose(_p, _q, _s);
       this.fill.setMatrixAt(i, _m);
       this.fill.setColorAt(i, p.col);
@@ -151,6 +198,7 @@ export class PointLayer {
     this.outline.count = this.fill.count = n;
     this.outline.instanceMatrix.needsUpdate = true;
     this.fill.instanceMatrix.needsUpdate = true;
+    this.outline.instanceColor.needsUpdate = true;
     this.fill.instanceColor.needsUpdate = true;
   }
 }
@@ -354,4 +402,116 @@ export class TrailLayer {
   }
 
   setVisible(v) { this.group.visible = v; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Segments: thick lines (instanced quads) with per-segment color     */
+/* ------------------------------------------------------------------ */
+export class SegmentLayer {
+  constructor(stage, { max = 4000, z = -0.5, opacity = 1 } = {}) {
+    this.max = max;
+    const geo = new THREE.PlaneGeometry(1, 1);
+    geo.translate(0.5, 0, 0); // spans x ∈ [0,1] so scale.x = length
+    this.mesh = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: opacity < 1, opacity, depthWrite: false }), max);
+    this.mesh.frustumCulled = false;
+    this.mesh.count = 0;
+    this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.mesh.setColorAt(0, new THREE.Color());
+    this.mesh.instanceColor.setUsage(THREE.DynamicDrawUsage);
+    this.mesh.position.z = z;
+    stage.scene.add(this.mesh);
+    this._e = new THREE.Euler();
+  }
+
+  /** segs: [{ x1, y1, x2, y2, w (world width), col (THREE.Color) }] */
+  sync(segs) {
+    const n = Math.min(segs.length, this.max);
+    for (let i = 0; i < n; i++) {
+      const s = segs[i];
+      const dx = s.x2 - s.x1, dy = s.y2 - s.y1;
+      const len = Math.hypot(dx, dy);
+      this._e.set(0, 0, Math.atan2(dy, dx));
+      _q.setFromEuler(this._e);
+      _p.set(s.x1, s.y1, 0);
+      _s.set(Math.max(len, 1e-6), s.w, 1);
+      _m.compose(_p, _q, _s);
+      this.mesh.setMatrixAt(i, _m);
+      this.mesh.setColorAt(i, s.col);
+    }
+    _q.identity();
+    this.mesh.count = n;
+    this.mesh.instanceMatrix.needsUpdate = true;
+    this.mesh.instanceColor.needsUpdate = true;
+  }
+  setOpacity(o) { this.mesh.material.opacity = o; this.mesh.material.transparent = o < 1; }
+  setVisible(v) { this.mesh.visible = v; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Circles: crisp rings + soft fills with per-circle color and alpha   */
+/* (ε-neighborhoods, core distances, …)                               */
+/* ------------------------------------------------------------------ */
+export class CircleLayer {
+  constructor(stage, { max = 2000, z = -2, thickness = 1.6 } = {}) {
+    this.max = max;
+    const base = new THREE.PlaneGeometry(2, 2);
+    const geo = new THREE.InstancedBufferGeometry();
+    geo.index = base.index;
+    geo.setAttribute('position', base.getAttribute('position'));
+    this.iPos = new THREE.InstancedBufferAttribute(new Float32Array(max * 3), 3).setUsage(THREE.DynamicDrawUsage); // x, y, r
+    this.iCol = new THREE.InstancedBufferAttribute(new Float32Array(max * 4), 4).setUsage(THREE.DynamicDrawUsage); // rgb + fill alpha
+    this.iRing = new THREE.InstancedBufferAttribute(new Float32Array(max), 1).setUsage(THREE.DynamicDrawUsage); // ring alpha
+    geo.setAttribute('iPos', this.iPos);
+    geo.setAttribute('iCol', this.iCol);
+    geo.setAttribute('iRing', this.iRing);
+    geo.instanceCount = 0;
+    this.uniforms = { uPx: { value: 0.003 }, uThick: { value: thickness } };
+    const mat = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      transparent: true,
+      depthWrite: false,
+      vertexShader: /* glsl */ `
+        attribute vec3 iPos; attribute vec4 iCol; attribute float iRing;
+        uniform float uPx;
+        varying vec2 vL; varying float vR; varying vec4 vCol; varying float vRing;
+        void main() {
+          float R = iPos.z + uPx * 3.0;
+          vL = position.xy * R; vR = iPos.z; vCol = iCol; vRing = iRing;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(iPos.xy + vL, 0.0, 1.0);
+        }`,
+      fragmentShader: /* glsl */ `
+        uniform float uPx, uThick;
+        varying vec2 vL; varying float vR; varying vec4 vCol; varying float vRing;
+        void main() {
+          float d = length(vL);
+          float ring = 1.0 - smoothstep(uPx * uThick * 0.5, uPx * (uThick * 0.5 + 1.0), abs(d - vR));
+          float inside = 1.0 - smoothstep(vR - uPx, vR, d);
+          float a = max(ring * vRing, inside * vCol.a);
+          if (a < 0.003) discard;
+          gl_FragColor = vec4(vCol.rgb, a);
+          #include <colorspace_fragment>
+        }`,
+    });
+    this.mesh = new THREE.Mesh(geo, mat);
+    this.mesh.frustumCulled = false;
+    this.mesh.position.z = z;
+    stage.scene.add(this.mesh);
+    this._unResize = stage.onResize((v) => { this.uniforms.uPx.value = v.worldPerPx; });
+  }
+
+  /** circles: [{ x, y, r (world), col (THREE.Color), fill (alpha), ring (alpha) }] */
+  sync(circles) {
+    const n = Math.min(circles.length, this.max);
+    const P = this.iPos.array, C = this.iCol.array, R = this.iRing.array;
+    for (let i = 0; i < n; i++) {
+      const c = circles[i];
+      P[i * 3] = c.x; P[i * 3 + 1] = c.y; P[i * 3 + 2] = Math.max(c.r, 0);
+      C[i * 4] = c.col.r; C[i * 4 + 1] = c.col.g; C[i * 4 + 2] = c.col.b; C[i * 4 + 3] = c.fill ?? 0;
+      R[i] = c.ring ?? 0.6;
+    }
+    this.mesh.geometry.instanceCount = n;
+    this.iPos.needsUpdate = this.iCol.needsUpdate = this.iRing.needsUpdate = true;
+  }
+  setVisible(v) { this.mesh.visible = v; }
+  dispose() { this._unResize(); }
 }
