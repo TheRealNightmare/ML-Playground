@@ -20,7 +20,7 @@ export function intuitionTab() {
     h('h4', {}, 'What is DBSCAN?'),
     P('<b>D</b>ensity-<b>B</b>ased <b>S</b>patial <b>C</b>lustering of <b>A</b>pplications with <b>N</b>oise. It finds clusters as <b>crowded areas</b> separated by emptier space, and marks lonely points as <b>noise</b>. You don’t choose the number of clusters.'),
     h('div', { class: 'callout' },
-      h('strong', {}, '🎉 Party analogy'),
+      h('strong', {}, 'Party analogy'),
       P('Everyone has an arm’s length (ε). If you can reach at least minPts people (yourself included), you’re a <b>core</b> guest at the centre of a party. Anyone a core guest can reach joins that party — if they can’t reach enough people themselves, they’re on the <b>border</b>. People nobody reaches are standing alone: <b>noise</b>.'),
     ),
     h('h4', {}, 'Two settings'),
@@ -76,13 +76,13 @@ export function challengesTab(actions) {
     answer ? h('details', {}, h('summary', {}, 'What should I notice?'), h('p', { html: answer })) : null,
   );
   return h('div', { class: 'learn' },
-    card('📝', 'Reproduce the slides', 'Load points A–J and step through one point at a time. Watch the distance table.', 'Load slide example', actions.lec,
+    card('', 'Reproduce the slides', 'Load points A–J and step through one point at a time. Watch the distance table.', 'Load slide example', actions.lec,
       'A, B, C, D are core → cluster 1. E, F, G are core → cluster 2, and H joins as a border point (only 2 neighbours). I and J are noise.'),
-    card('🌙', 'Moons + noise', 'Load moons with noise and run to the end.', 'Load moons', actions.moons,
+    card('', 'Moons + noise', 'Load moons with noise and run to the end.', 'Load moons', actions.moons,
       'DBSCAN follows the curves and finds both moons, and the scattered points become noise. K-Means can do neither.'),
-    card('🎚️', 'Too small, too big', 'After it finishes, slide ε down slowly, then up.', 'Load noisy blobs', actions.noisy,
+    card('', 'Too small, too big', 'After it finishes, slide ε down slowly, then up.', 'Load noisy blobs', actions.noisy,
       'Small ε: almost everything becomes noise. Large ε: separate clusters melt into one. The k-distance chart’s knee shows a sensible ε.'),
-    card('🌗', 'Different densities', 'Load clusters with very different densities. Try to find one ε that works for all three.', 'Load densities', actions.density,
+    card('', 'Different densities', 'Load clusters with very different densities. Try to find one ε that works for all three.', 'Load densities', actions.density,
       'You can’t: an ε that captures the loose cluster merges or swallows noise, and one tuned for the tight cluster turns the loose one into noise. HDBSCAN solves this.'),
   );
 }

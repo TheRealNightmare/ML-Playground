@@ -46,7 +46,7 @@ export function createPointLab(root, cfg) {
 
   /* ---------- overlays ---------- */
   const toastEl = h('div', { class: 'toast', role: 'status' });
-  const emptyEl = h('div', { class: 'stage-empty' }, h('div', {}, h('span', { class: 'big' }, '👆'), 'Click anywhere to add points', h('br'), h('small', {}, 'or pick a dataset')));
+  const emptyEl = h('div', { class: 'stage-empty' }, h('div', {}, h('span', { class: 'big' }, ''), 'Click anywhere to add points', h('br'), h('small', {}, 'or pick a dataset')));
   const tipEl = h('div', { class: 'stage-tip' });
   lab.overlay.append(emptyEl, tipEl, toastEl);
   let toastTimer = 0;
@@ -71,7 +71,7 @@ export function createPointLab(root, cfg) {
 
   /* ---------- player ---------- */
   const player = new Player({
-    onStep: () => (L.points.length ? L.hooks.step?.() : (toast('Add some points first 🙂'), false)),
+    onStep: () => (L.points.length ? L.hooks.step?.() : (toast('Add some points first '), false)),
     onReset: () => { L.hooks.reset?.(); toast('Reset — same points, fresh start'); },
     isBusy: () => L.hooks.isBusy?.() || L.busy,
     baseInterval: cfg.interval ?? 0.85,
@@ -317,7 +317,7 @@ export function createPointLab(root, cfg) {
     return b;
   });
   const lectureChips = (cfg.lectures || []).map((lec) => {
-    const b = h('button', { type: 'button', class: 'chip chip-lecture', 'data-id': lec.id, onclick: () => L.loadLecture(lec) }, h('span', { class: 'emo' }, '📝'), lec.label);
+    const b = h('button', { type: 'button', class: 'chip chip-lecture', 'data-id': lec.id, onclick: () => L.loadLecture(lec) }, h('span', { class: 'emo' }, ''), lec.label);
     chipEls.push(b);
     return b;
   });
@@ -326,35 +326,35 @@ export function createPointLab(root, cfg) {
 
   const toolSeg = segmented({
     options: [
-      { value: 'draw', label: '✏️ Draw', title: 'Click to add a point, drag to move one' },
-      { value: 'spray', label: '💨 Spray', title: 'Hold and drag to spray many points' },
-      { value: 'erase', label: '🧽 Erase', title: 'Hold and drag to erase points' },
+      { value: 'draw', label: 'Draw', title: 'Click to add a point, drag to move one' },
+      { value: 'spray', label: 'Spray', title: 'Hold and drag to spray many points' },
+      { value: 'erase', label: 'Erase', title: 'Hold and drag to erase points' },
     ],
     value: 'draw',
     onChange: (v) => { L.tool = v; updateTip(); },
   });
   function updateTip() {
     tipEl.textContent = (cfg.tips || {
-      draw: '✏️ Click to add · drag a point to move it',
-      spray: '💨 Hold & drag to spray points',
-      erase: '🧽 Hold & drag to erase',
+      draw: 'Click to add · drag a point to move it',
+      spray: 'Hold & drag to spray points',
+      erase: 'Hold & drag to erase',
     })[L.tool];
   }
   updateTip();
 
-  const num = (n) => h('span', { class: 'num' }, n);
+  const num = (n) => h('span', { class: 'num' }, String(n).padStart(2, '0') + ' /');
   L.num = num;
   L.controlsData = section([num(1), 'Data'],
     h('div', { class: 'chips' }, chips),
     lectureChips.length ? h('div', { class: 'lecture-row' }, h('span', { class: 'field-label' }, 'From the lecture'), h('div', { class: 'chips chips-lecture' }, lectureChips)) : null,
     datasetNote,
     nSlider?.el,
-    button('🔄 New sample', () => (L.lecture ? L.loadLecture(L.lecture) : L.loadDataset(L.datasetId)), { variant: 'btn-block' }),
+    button('New sample', () => (L.lecture ? L.loadLecture(L.lecture) : L.loadDataset(L.datasetId)), { variant: 'btn-block' }),
   );
   L.controlsDraw = section([num(2), 'Draw your own'],
     toolSeg.el,
     h('span', { class: 'hint' }, cfg.drawHint || 'Drag any point to move it. Everything reacts live.'),
-    button('🗑️ Clear canvas', () => {
+    button('Clear canvas', () => {
       player.pause();
       L.points = [];
       L.lecture = null;
@@ -384,7 +384,7 @@ export function createPointLab(root, cfg) {
       track.append(h('span', { class: 'phase-chip' + (i === ai ? ' active' : i < ai ? ' done' : '') }, p.label));
     });
     lab.narrator.replaceChildren(
-      h('div', { class: 'narrator-avatar bounce' }, emoji),
+      h('div', { class: 'narrator-avatar bounce' }, String(Math.max(ai, 0) + 1).padStart(2, '0')),
       h('div', { class: 'narrator-main' }, items.length ? track : null, h('div', { class: 'narrator-title' }, title), h('div', { class: 'narrator-text', html: text })),
     );
   };
@@ -393,7 +393,7 @@ export function createPointLab(root, cfg) {
   L.worked = workedCard();
   L.worked.show(false);
   L.learn = tabs(cfg.learnTabs);
-  L.learnCard = h('div', { class: 'card side-card' }, h('h3', {}, '📚 Learn'), L.learn.el);
+  L.learnCard = h('div', { class: 'card side-card' }, h('h3', {}, 'Learn'), L.learn.el);
   L.mountSide = (...cards) => lab.side.append(...cards, L.worked.el, L.learnCard);
 
   L.focusStage = () => { if (window.innerWidth < 1240) lab.el.querySelector('.lab-stage').scrollIntoView({ behavior: 'smooth', block: 'start' }); };

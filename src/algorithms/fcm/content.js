@@ -25,7 +25,7 @@ export function intuitionTab() {
     h('h4', {}, 'Hard vs soft clustering'),
     P('K-Means is <b>hard</b>: every point belongs to exactly one cluster (membership 0 or 1). Fuzzy C-Means is <b>soft</b>: a point can be 70% in one cluster and 30% in another.'),
     h('div', { class: 'callout' },
-      h('strong', {}, '🎨 Paint mixing analogy'),
+      h('strong', {}, 'Paint mixing analogy'),
       P('Each cluster is a paint color. A point near the middle of a cluster gets almost pure color. A point between two clusters becomes a mix — exactly what you see on the canvas.'),
     ),
     h('h4', {}, 'The steps'),
@@ -78,13 +78,13 @@ export function challengesTab(actions) {
     answer ? h('details', {}, h('summary', {}, 'What should I notice?'), h('p', { html: answer })) : null,
   );
   return h('div', { class: 'learn' },
-    card('📝', 'Reproduce the slides', 'Load the 1D example and step once to compute the centroids, then once more for memberships.', 'Load 1D example', actions.lec1,
+    card('', 'Reproduce the slides', 'Load the 1D example and step once to compute the centroids, then once more for memberships.', 'Load 1D example', actions.lec1,
       'c₁ ≈ 2.34, c₂ ≈ 6.44, then x₁ = 1 gets u₁₁ ≈ 0.94 and u₁₂ ≈ 0.06.'),
-    card('🧬', 'Overlapping groups', 'Load overlapping blobs with c = 3 and press play. Hover the points in the middle.', 'Load overlap', actions.overlap,
+    card('', 'Overlapping groups', 'Load overlapping blobs with c = 3 and press play. Hover the points in the middle.', 'Load overlap', actions.overlap,
       'Points between groups get split memberships like 0.5 / 0.4 / 0.1 and look like a color blend. K-Means would force each one into a single group.'),
-    card('🎚️', 'Turn the fuzziness dial', 'After it converges, drag <b>m</b> from 1.1 to 4 and press play again.', 'Load blobs', actions.blobs,
+    card('', 'Turn the fuzziness dial', 'After it converges, drag <b>m</b> from 1.1 to 4 and press play again.', 'Load blobs', actions.blobs,
       'Small m makes crisp colors and sharp regions (like K-Means). Large m washes everything out — memberships drift towards 1/c.'),
-    card('✋', 'Drag a centroid', 'Grab a ★ and move it around. The background shows the membership field live.', null, null,
+    card('', 'Drag a centroid', 'Grab a ★ and move it around. The background shows the membership field live.', null, null,
       'Every spot on the canvas has a membership for every centroid. The color is the mix; the brightness shows how sure the membership is.'),
   );
 }

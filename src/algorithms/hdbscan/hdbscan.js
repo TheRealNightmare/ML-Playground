@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 import { createPointLab, statTiles, GREY, COLORS, INK_C, WHITE } from '../../core/pointlab.js';
 import { MiniChart } from '../../core/chart.js';
-import { h, section, slider, segmented, toggle, button } from '../../core/ui.js';
+import { h, section, slider, segmented, toggle, button, setText } from '../../core/ui.js';
 import { table, note, para, step, fmt, fx } from '../../core/worked.js';
 import * as H from './algo.js';
 import { LECTURES, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const NOISE_RING = new THREE.Color(0x9b9384);
-const GRAPE = new THREE.Color(0x9b5de5);
-const SHORT = new THREE.Color(0x2ec4b6);
-const LONG = new THREE.Color(0xff6b6b);
-const FAINT = new THREE.Color(0xd9cfc0);
+const NOISE_RING = new THREE.Color(0xa39889);
+const GRAPE = new THREE.Color(0x9d85ee);
+const SHORT = new THREE.Color(0x4fc9a4);
+const LONG = new THREE.Color(0xff7a66);
+const FAINT = new THREE.Color(0xeadbc4);
 
 export function mount(root) {
   const S = {
@@ -21,7 +21,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { title: 'HDBSCAN', emoji: '🏔️', category: 'Unsupervised · Density', level: 'Advanced', blurb: 'Density clustering for groups of different densities — through core distances and a spanning tree.' },
+    meta: { accent: '#A8E6A1', title: 'HDBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Advanced', blurb: 'Density clustering for groups of different densities — through core distances and a spanning tree.' },
     datasets: ['density', 'noisymoons', 'noisy', 'smiley', 'uniform', 'blank'],
     defaultDataset: 'density',
     n: { min: 20, max: 500, step: 20, value: 240 },
@@ -34,15 +34,14 @@ export function mount(root) {
       { id: 'mrd', label: 'Mutual reach.' },
       { id: 'mst', label: 'Spanning tree' },
       { id: 'tree', label: 'Condense / cut' },
-      { id: 'done', label: 'Clusters 🎉' },
+      { id: 'done', label: 'Clusters ' },
     ],
     learnTabs: [
-      { id: 'intuition', label: '💡 Intuition', render: intuitionTab },
+      { id: 'intuition', label: 'Intuition', render: intuitionTab },
       { id: 'math', label: '∑ Math', render: mathTab },
-      { id: 'try', label: '🎯 Try this', render: () => challengesTab(actions) },
+      { id: 'try', label: 'Try this', render: () => challengesTab(actions) },
     ],
   });
-  L.lab.el.querySelector('.lab-emoji').style.background = '#2EC4B6';
   const n = () => L.points.length;
   const nm = (i) => L.points[i]?.name || `#${i + 1}`;
 
@@ -139,17 +138,17 @@ export function mount(root) {
   const modeHint = h('span', { class: 'hint' });
   const modeSeg = segmented({
     label: 'Cluster extraction',
-    options: [{ value: 'stability', label: '🏔️ Stability (real)' }, { value: 'cut', label: '✂️ Threshold (slides)' }],
+    options: [{ value: 'stability', label: 'Stability' }, { value: 'cut', label: 'Slide cut' }],
     value: S.mode, onChange: (v) => setMode(v),
   });
   const epsSlider = slider({ label: 'Threshold ε', min: 0.02, max: 0.6, step: 0.005, value: S.eps, format: (v) => v.toFixed(3), onInput: (v) => { S.eps = v; rerun(); } });
-  const tAllow = toggle({ label: 'Allow a single cluster', emoji: '1️⃣', value: false, onChange: (v) => setAllow(v) });
-  const tCore = toggle({ label: 'Core-distance circles', emoji: '⭕', value: true, onChange: (v) => (S.show.core = v) });
-  const tMst = toggle({ label: 'Spanning tree edges', emoji: '🌐', value: true, onChange: (v) => (S.show.mst = v) });
+  const tAllow = toggle({ label: 'Allow a single cluster', emoji: '', value: false, onChange: (v) => setAllow(v) });
+  const tCore = toggle({ label: 'Core-distance circles', emoji: '', value: true, onChange: (v) => (S.show.core = v) });
+  const tMst = toggle({ label: 'Spanning tree edges', emoji: '', value: true, onChange: (v) => (S.show.mst = v) });
   setMode(S.mode, true);
   L.addControls(
     section([L.num(3), 'HDBSCAN settings'], kSlider.el, mcsSlider.el, modeSeg.el, modeHint, epsSlider.el, tAllow.el,
-      button('⏩ Run to the end', finish, { variant: 'btn-block' })),
+      button('Run to the end', finish, { variant: 'btn-block' })),
     section([L.num(4), 'Show'], tCore.el, tMst.el),
   );
 
@@ -159,7 +158,7 @@ export function mount(root) {
   const treeCanvas = h('canvas', { class: 'side-canvas' });
   const cutChart = new MiniChart({ height: 150, xLabel: 'MST edges, longest first' });
   const sideNote = h('div', { class: 'chart-note' });
-  const numbers = h('div', { class: 'card side-card' }, h('h3', {}, '🏔️ Hierarchy'), stats.el, treeTitle, treeCanvas, cutChart.canvas, sideNote);
+  const numbers = h('div', { class: 'card side-card' }, h('h3', {}, 'Hierarchy'), stats.el, treeTitle, treeCanvas, cutChart.canvas, sideNote);
   L.mountSide(numbers);
   new ResizeObserver(() => drawTree()).observe(treeCanvas);
 
@@ -188,14 +187,14 @@ export function mount(root) {
       cutChart.setBars(top.map((i) => ({
         label: n() <= 12 ? `${nm(S.R.edges[i].a)}–${nm(S.R.edges[i].b)}` : '',
         value: S.R.edges[i].w,
-        color: removed.has(i) ? '#FFB3B3' : S.R.edges[i].w > S.eps ? '#FFD9A0' : '#BDEFE8',
+        color: removed.has(i) ? '#FFC2B8' : S.R.edges[i].w > S.eps ? '#FFE9A8' : '#CFF0DF',
         highlight: removed.has(i),
       })), { xLabel: order.length > 40 ? 'the 40 longest MST edges' : 'MST edges, longest first', ref: { y: S.eps, label: `ε = ${fmt(S.eps)}` } });
-      treeTitle.textContent = 'Edges longer than ε get removed';
+      setText(treeTitle, 'Edges longer than ε get removed');
       sideNote.innerHTML = 'Red = removed, orange = longer than ε (to be removed), mint = kept.';
       return;
     }
-    treeTitle.textContent = 'Condensed tree (λ = 1 / distance, grows downward)';
+    setText(treeTitle, 'Condensed tree (λ = 1 / distance, grows downward)');
     sideNote.innerHTML = S.phase === 'done' || S.phase === 'tree'
       ? 'Each bar is a cluster; it narrows as points fall out. <b>Outlined bars</b> are the clusters HDBSCAN picked (most stable).'
       : 'Appears once the spanning tree is built.';
@@ -206,9 +205,9 @@ export function mount(root) {
     const ctx = treeCanvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, Hh);
-    ctx.font = '600 11px Nunito, system-ui, sans-serif';
+    ctx.font = '600 11px JetBrains Mono Variable, monospace';
     if (!S.R || !(S.phase === 'tree' || S.phase === 'done') || !S.R.tree.rows.length) {
-      ctx.fillStyle = '#8A8197'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#7A7068'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(S.R ? 'Step until the tree is built' : 'Add points', W / 2, Hh / 2);
       return;
     }
@@ -220,7 +219,7 @@ export function mount(root) {
     const pw = W - pad.l - pad.r, ph = Hh - pad.t - pad.b;
     const yOf = (lam) => pad.t + (Math.min(lam, lmax) / lmax) * ph;
     // axis
-    ctx.strokeStyle = '#EDE3D2'; ctx.fillStyle = '#8A8197'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = '#F5E2C6'; ctx.fillStyle = '#7A7068'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     for (let i = 0; i <= 3; i++) { const lam = (lmax * i) / 3, y = yOf(lam); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke(); ctx.fillText(fmt(lam, lmax < 10 ? 2 : 0), pad.l - 4, y); }
 
     const kids = new Map(), falls = new Map(), sizeAtBirth = new Map([[root, N]]);
@@ -238,7 +237,7 @@ export function mount(root) {
       let remaining = sizeAtBirth.get(c);
       let lam = birth.get(c) || 0;
       const sel = S.phase === 'done' && S.R.selected.has(c);
-      const col = sel ? '#' + COLORS[labelOf.get(c) % COLORS.length].getHexString() : '#E5DCCB';
+      const col = sel ? '#' + COLORS[labelOf.get(c) % COLORS.length].getHexString() : '#F0E2CC';
       ctx.fillStyle = col;
       const top = yOf(lam);
       let i = 0;
@@ -250,7 +249,7 @@ export function mount(root) {
         lam = l2;
       }
       if (sel) {
-        ctx.strokeStyle = '#2B2240'; ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#2A2622'; ctx.lineWidth = 2.5;
         const w = sizeAtBirth.get(c) * unit;
         ctx.strokeRect(cx - w / 2, top, w, Math.max(yOf(lam) - top, 2));
       }
@@ -261,7 +260,7 @@ export function mount(root) {
         const span = ((x1 - x0) * r.size) / tot;
         // connector
         const ccx = xs + span / 2;
-        ctx.strokeStyle = '#8A8197'; ctx.lineWidth = 1.2;
+        ctx.strokeStyle = '#7A7068'; ctx.lineWidth = 1.2;
         ctx.beginPath(); ctx.moveTo(cx, yOf(r.lambda)); ctx.lineTo(ccx, yOf(r.lambda)); ctx.stroke();
         drawCluster(r.child, xs, xs + span);
         xs += span;
@@ -334,18 +333,18 @@ export function mount(root) {
     stats.set('edges', R ? `${S.phase === 'mst' ? S.mstShown : ['tree', 'done'].includes(S.phase) ? R.edges.length : 0}/${R.edges.length}` : '–');
 
     let nar, active = S.phase;
-    if (!N) nar = { emoji: '👋', title: 'Give me some points!', text: 'Pick a dataset or click on the canvas.' };
-    else if (S.phase === 'ready') nar = { emoji: '🏔️', title: `Ready · k = ${S.k}, min cluster size = ${S.mcs}`, text: 'Step through the six stages: core distances → mutual reachability → spanning tree → condense/cut → clusters.' };
-    else if (S.phase === 'core') nar = { emoji: '⭕', title: 'Step 2 · Core distances', text: `Each circle reaches the point’s <b>${S.k}${S.k === 1 ? 'st' : S.k === 2 ? 'nd' : S.k === 3 ? 'rd' : 'th'} nearest neighbour</b>. Small circles = dense areas, big circles = sparse ones. Hover any point.` };
-    else if (S.phase === 'mrd') nar = { emoji: '↔️', title: 'Step 3 · Mutual reachability', text: 'New distance = max(core of p, core of q, real distance). Points in sparse areas get pushed away from everything, so noise is easy to cut off later.' };
-    else if (S.phase === 'mst') nar = { emoji: '🌐', title: `Step 4 · Minimum spanning tree (${S.mstShown}/${R.edges.length})`, text: 'Connect all points with the cheapest links (by mutual reachability), shortest first. <span style="color:#2EC4B6">Mint</span> = short, <span style="color:#FF6B6B">coral</span> = long.' };
+    if (!N) nar = { emoji: '', title: 'Give me some points!', text: 'Pick a dataset or click on the canvas.' };
+    else if (S.phase === 'ready') nar = { emoji: '', title: `Ready · k = ${S.k}, min cluster size = ${S.mcs}`, text: 'Step through the six stages: core distances → mutual reachability → spanning tree → condense/cut → clusters.' };
+    else if (S.phase === 'core') nar = { emoji: '', title: 'Step 2 · Core distances', text: `Each circle reaches the point’s <b>${S.k}${S.k === 1 ? 'st' : S.k === 2 ? 'nd' : S.k === 3 ? 'rd' : 'th'} nearest neighbour</b>. Small circles = dense areas, big circles = sparse ones. Hover any point.` };
+    else if (S.phase === 'mrd') nar = { emoji: '', title: 'Step 3 · Mutual reachability', text: 'New distance = max(core of p, core of q, real distance). Points in sparse areas get pushed away from everything, so noise is easy to cut off later.' };
+    else if (S.phase === 'mst') nar = { emoji: '', title: `Step 4 · Minimum spanning tree (${S.mstShown}/${R.edges.length})`, text: 'Connect all points with the cheapest links (by mutual reachability), shortest first. <span style="color:#A8E6A1">Mint</span> = short, <span style="color:#FF8C7A">coral</span> = long.' };
     else if (S.phase === 'tree') {
       active = 'tree';
       nar = S.mode === 'cut'
-        ? { emoji: '✂️', title: `Step 5 · Cut edges longer than ε = ${fmt(S.eps)}`, text: `Removed ${S.cutRemoved} of ${R.cutOrder.length} long edges. Pieces smaller than ${S.mcs} points become noise.` }
-        : { emoji: '🌳', title: 'Step 5 · Condensed tree', text: 'Remove edges from longest to shortest. Clusters are born, shrink as points fall out, and split. See the tree on the right.' };
+        ? { emoji: '', title: `Step 5 · Cut edges longer than ε = ${fmt(S.eps)}`, text: `Removed ${S.cutRemoved} of ${R.cutOrder.length} long edges. Pieces smaller than ${S.mcs} points become noise.` }
+        : { emoji: '', title: 'Step 5 · Condensed tree', text: 'Remove edges from longest to shortest. Clusters are born, shrink as points fall out, and split. See the tree on the right.' };
     } else {
-      nar = { emoji: '🎉', title: `Done: ${nClusters} cluster${nClusters === 1 ? '' : 's'}, ${labels.filter((l) => l < 0).length} noise`, text: S.mode === 'cut' ? `Threshold method with ε = ${fmt(S.eps)}. Switch to <b>Stability</b> to see the real HDBSCAN choice.` : 'HDBSCAN kept the most stable clusters (outlined in the tree). Change min cluster size and watch it update.' };
+      nar = { emoji: '', title: `Done: ${nClusters} cluster${nClusters === 1 ? '' : 's'}, ${labels.filter((l) => l < 0).length} noise`, text: S.mode === 'cut' ? `Threshold method with ε = ${fmt(S.eps)}. Switch to <b>Stability</b> to see the real HDBSCAN choice.` : 'HDBSCAN kept the most stable clusters (outlined in the tree). Change min cluster size and watch it update.' };
     }
     L.narrate(nar, active);
     drawTree();
@@ -373,7 +372,7 @@ export function mount(root) {
         const i = 0, j = 3;
         parts.push(para(`Example: MRD(${nm(i)}, ${nm(j)}) = max(core(${nm(i)}) = ${fx(R.core[i])}, core(${nm(j)}) = ${fx(R.core[j])}, d = ${fx(H.dist(L.points[i], L.points[j]))}) = <b>${fx(H.mrd(L.points, R.core, i, j))}</b>`));
       }
-      if (L.lecture?.id === 'lec-hd1') parts.push(note('📌 <b>Slide note:</b> the slides list (E, F) = 74.99. The exact value is max(7.21, 74.95, 74.95) = 74.95, because d(E, F) = √(17² + 73²) ≈ 74.95.', 'warn'));
+      if (L.lecture?.id === 'lec-hd1') parts.push(note('<b>Slide note:</b> the slides list (E, F) = 74.99. The exact value is max(7.21, 74.95, 74.95) = 74.95, because d(E, F) = √(17² + 73²) ≈ 74.95.', 'warn'));
     }
     if (ph === 'mst' || ph === 'tree' || ph === 'done') {
       const shown = ph === 'mst' ? S.mstShown : R.edges.length;

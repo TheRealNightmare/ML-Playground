@@ -4,13 +4,13 @@ import { gauss, clip, blobs, uneven, moons, rings, smiley, uniform } from '../..
 export { blobs };
 
 export const DATASETS = [
-  { id: 'blobs', label: 'Blobs', emoji: '🫧', make: (n) => blobs(n), note: 'Round, well-separated groups — K-Means’ favourite kind of data.' },
-  { id: 'uneven', label: 'Uneven', emoji: '⚖️', make: uneven, note: 'One big spread-out group and two tiny tight ones. Watch where the borders end up.' },
-  { id: 'moons', label: 'Moons', emoji: '🌙', make: (n) => moons(n), note: 'Two curved shapes. K-Means can only draw straight borders, so it slices them wrong.' },
-  { id: 'rings', label: 'Rings', emoji: '💍', make: rings, note: 'A ring around a circle. No straight-line split can separate them.' },
-  { id: 'smiley', label: 'Smiley', emoji: '🙂', make: smiley, note: 'Just for fun — what does K-Means think a face is made of?' },
-  { id: 'uniform', label: 'Random', emoji: '🎲', make: uniform, note: 'No real groups at all. K-Means still splits it into K pieces — it always will!' },
-  { id: 'blank', label: 'Blank', emoji: '✏️', make: () => [], note: 'An empty canvas. Click, drag or use the spray tool to draw your own data.' },
+  { id: 'blobs', label: 'Blobs', emoji: '', make: (n) => blobs(n), note: 'Round, well-separated groups — K-Means’ favourite kind of data.' },
+  { id: 'uneven', label: 'Uneven', emoji: '', make: uneven, note: 'One big spread-out group and two tiny tight ones. Watch where the borders end up.' },
+  { id: 'moons', label: 'Moons', emoji: '', make: (n) => moons(n), note: 'Two curved shapes. K-Means can only draw straight borders, so it slices them wrong.' },
+  { id: 'rings', label: 'Rings', emoji: '', make: rings, note: 'A ring around a circle. No straight-line split can separate them.' },
+  { id: 'smiley', label: 'Smiley', emoji: '', make: smiley, note: 'Just for fun — what does K-Means think a face is made of?' },
+  { id: 'uniform', label: 'Random', emoji: '', make: uniform, note: 'No real groups at all. K-Means still splits it into K pieces — it always will!' },
+  { id: 'blank', label: 'Blank', emoji: '', make: () => [], note: 'An empty canvas. Click, drag or use the spray tool to draw your own data.' },
 ];
 
 export const findDataset = (id) => DATASETS.find((d) => d.id === id) || DATASETS[0];

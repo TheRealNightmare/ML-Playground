@@ -119,15 +119,15 @@ export function overlapping(n) {
 }
 
 export const LIB = {
-  blobs: { id: 'blobs', label: 'Blobs', emoji: '🫧', make: (n) => blobs(n), note: 'Round, well-separated groups.' },
-  uneven: { id: 'uneven', label: 'Uneven', emoji: '⚖️', make: uneven, note: 'One big spread-out group and two tiny tight ones.' },
-  moons: { id: 'moons', label: 'Moons', emoji: '🌙', make: (n) => moons(n), note: 'Two curved shapes that no straight line can separate.' },
-  rings: { id: 'rings', label: 'Rings', emoji: '💍', make: rings, note: 'A ring around a circle.' },
-  smiley: { id: 'smiley', label: 'Smiley', emoji: '🙂', make: smiley, note: 'Just for fun — a face made of points.' },
-  uniform: { id: 'uniform', label: 'Random', emoji: '🎲', make: uniform, note: 'No real groups at all.' },
-  noisy: { id: 'noisy', label: 'Noisy', emoji: '🌫️', make: noisyBlobs, note: 'Blobs with random noise scattered around them.' },
-  noisymoons: { id: 'noisymoons', label: 'Moons+noise', emoji: '🌘', make: noisyMoons, note: 'Two moons with background noise.' },
-  density: { id: 'density', label: 'Densities', emoji: '🌗', make: varyingDensity, note: 'A tight group, a medium group and a loose group, plus noise.' },
-  overlap: { id: 'overlap', label: 'Overlap', emoji: '🧬', make: overlapping, note: 'Groups that blend into each other — no clear border.' },
-  blank: { id: 'blank', label: 'Blank', emoji: '✏️', make: () => [], note: 'An empty canvas. Draw your own data.' },
+  blobs: { id: 'blobs', label: 'Blobs', emoji: '', make: (n) => blobs(n), note: 'Round, well-separated groups.' },
+  uneven: { id: 'uneven', label: 'Uneven', emoji: '', make: uneven, note: 'One big spread-out group and two tiny tight ones.' },
+  moons: { id: 'moons', label: 'Moons', emoji: '', make: (n) => moons(n), note: 'Two curved shapes that no straight line can separate.' },
+  rings: { id: 'rings', label: 'Rings', emoji: '', make: rings, note: 'A ring around a circle.' },
+  smiley: { id: 'smiley', label: 'Smiley', emoji: '', make: smiley, note: 'Just for fun — a face made of points.' },
+  uniform: { id: 'uniform', label: 'Random', emoji: '', make: uniform, note: 'No real groups at all.' },
+  noisy: { id: 'noisy', label: 'Noisy', emoji: '', make: noisyBlobs, note: 'Blobs with random noise scattered around them.' },
+  noisymoons: { id: 'noisymoons', label: 'Moons+noise', emoji: '', make: noisyMoons, note: 'Two moons with background noise.' },
+  density: { id: 'density', label: 'Densities', emoji: '', make: varyingDensity, note: 'A tight group, a medium group and a loose group, plus noise.' },
+  overlap: { id: 'overlap', label: 'Overlap', emoji: '', make: overlapping, note: 'Groups that blend into each other — no clear border.' },
+  blank: { id: 'blank', label: 'Blank', emoji: '', make: () => [], note: 'An empty canvas. Draw your own data.' },
 };

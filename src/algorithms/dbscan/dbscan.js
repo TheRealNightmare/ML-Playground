@@ -6,7 +6,7 @@ import { table, note, para, step, fmt, fx } from '../../core/worked.js';
 import * as D from './algo.js';
 import { LECTURES, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const NOISE_RING = new THREE.Color(0x9b9384);
+const NOISE_RING = new THREE.Color(0xa39889);
 const name = (L, i) => L.points[i]?.name || `#${i + 1}`;
 
 export function mount(root) {
@@ -18,7 +18,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { title: 'DBSCAN', emoji: '🔍', category: 'Unsupervised · Density', level: 'Intermediate', blurb: 'Grow clusters from crowded areas, one point at a time, and leave the loners as noise.' },
+    meta: { accent: '#8EC9F5', title: 'DBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Intermediate', blurb: 'Grow clusters from crowded areas, one point at a time, and leave the loners as noise.' },
     datasets: ['noisymoons', 'noisy', 'rings', 'density', 'smiley', 'blank'],
     defaultDataset: 'noisymoons',
     n: { min: 20, max: 700, step: 20, value: 260 },
@@ -29,15 +29,14 @@ export function mount(root) {
       { id: 'ready', label: 'Data' },
       { id: 'visit', label: 'Visit a point' },
       { id: 'expand', label: 'Expand cluster', loopBack: true },
-      { id: 'done', label: 'Done 🎉' },
+      { id: 'done', label: 'Done ' },
     ],
     learnTabs: [
-      { id: 'intuition', label: '💡 Intuition', render: intuitionTab },
+      { id: 'intuition', label: 'Intuition', render: intuitionTab },
       { id: 'math', label: '∑ Math', render: mathTab },
-      { id: 'try', label: '🎯 Try this', render: () => challengesTab(actions) },
+      { id: 'try', label: 'Try this', render: () => challengesTab(actions) },
     ],
   });
-  L.lab.el.querySelector('.lab-emoji').style.background = '#4D96FF';
   const n = () => L.points.length;
 
   /* ---------------- algorithm ---------------- */
@@ -104,12 +103,12 @@ export function mount(root) {
   /* ---------------- controls ---------------- */
   const epsSlider = slider({ label: 'ε — neighbourhood radius', min: 0.02, max: 0.5, step: 0.005, value: S.eps, format: (v) => v.toFixed(3), onInput: (v) => setEps(v) });
   const minSlider = slider({ label: 'minPts — neighbours needed (incl. itself)', min: 2, max: 15, step: 1, value: S.minPts, onInput: (v) => setMin(v) });
-  const tAreas = toggle({ label: 'ε-circles of core points', emoji: '⭕', value: true, onChange: (v) => (S.show.areas = v) });
-  const tLinks = toggle({ label: 'Lines to neighbours', emoji: '🔗', value: true, onChange: (v) => (S.show.links = v) });
+  const tAreas = toggle({ label: 'ε-circles of core points', emoji: '', value: true, onChange: (v) => (S.show.areas = v) });
+  const tLinks = toggle({ label: 'Lines to neighbours', emoji: '', value: true, onChange: (v) => (S.show.links = v) });
   L.addControls(
     section([L.num(3), 'DBSCAN settings'], epsSlider.el, minSlider.el,
       h('span', { class: 'hint' }, 'Hover any point to see its ε-circle and neighbour count.'),
-      button('⏩ Run to the end', finish, { variant: 'btn-block' })),
+      button('Run to the end', finish, { variant: 'btn-block' })),
     section([L.num(4), 'Show'], tAreas.el, tLinks.el),
   );
 
@@ -118,12 +117,12 @@ export function mount(root) {
   const kchart = new MiniChart({ height: 130, xLabel: 'points sorted by k-distance', empty: 'Add points' });
   const kNote = h('div', { class: 'chart-note' });
   const legend = h('div', { class: 'legend-row' },
-    h('span', {}, h('i', { style: { background: '#4D96FF' } }), 'core'),
-    h('span', {}, h('i', { class: 'small', style: { background: '#4D96FF' } }), 'border'),
+    h('span', {}, h('i', { style: { background: '#8EC9F5' } }), 'core'),
+    h('span', {}, h('i', { class: 'small', style: { background: '#8EC9F5' } }), 'border'),
     h('span', {}, h('i', { class: 'ring' }), 'noise'),
-    h('span', {}, h('i', { style: { background: '#BDB5A6' } }), 'not visited'));
+    h('span', {}, h('i', { style: { background: '#B5ABA0' } }), 'not visited'));
   const numbers = h('div', { class: 'card side-card' },
-    h('h3', {}, '📊 Live numbers'), stats.el, legend,
+    h('h3', {}, 'Live numbers'), stats.el, legend,
     h('div', { class: 'sub-label' }, 'k-distance plot (pick ε at the knee)'), kchart.canvas, kNote);
   L.mountSide(numbers);
 
@@ -211,21 +210,21 @@ export function mount(root) {
     const N = n();
     const ev = S.ev;
     let nar, active = 'ready';
-    if (!N) nar = { emoji: '👋', title: 'Give me some points!', text: 'Pick a dataset or click on the canvas.' };
-    else if (S.phase === 'ready') nar = { emoji: '🔍', title: `Ready · ε = ${fmt(S.eps, 3)}, minPts = ${S.minPts}`, text: 'Each <b>Step</b> visits one point and counts how many points sit inside its ε-circle (itself included). Hover any point to preview.' };
+    if (!N) nar = { emoji: '', title: 'Give me some points!', text: 'Pick a dataset or click on the canvas.' };
+    else if (S.phase === 'ready') nar = { emoji: '', title: `Ready · ε = ${fmt(S.eps, 3)}, minPts = ${S.minPts}`, text: 'Each <b>Step</b> visits one point and counts how many points sit inside its ε-circle (itself included). Hover any point to preview.' };
     else if (S.phase === 'done') {
       const c = counts();
       active = 'done';
-      nar = { emoji: '🎉', title: `Done: ${c.clusters} cluster${c.clusters === 1 ? '' : 's'}, ${c.noise} noise`, text: `${c.core} core points, ${c.border} border points. Drag ε or minPts — the result updates live.` };
+      nar = { emoji: '', title: `Done: ${c.clusters} cluster${c.clusters === 1 ? '' : 's'}, ${c.noise} noise`, text: `${c.core} core points, ${c.border} border points. Drag ε or minPts — the result updates live.` };
     } else if (ev) {
       const nm = name(L, ev.i);
       const list = ev.nbrs.length <= 8 ? ev.nbrs.map((q) => name(L, q)).join(', ') : `${ev.nbrs.length} points`;
       const added = ev.added.length ? ` Added ${ev.added.length <= 6 ? ev.added.map((q) => name(L, q)).join(', ') : ev.added.length + ' points'} to cluster ${ev.cluster + 1}.` : '';
       active = ev.fromQueue ? 'expand' : 'visit';
-      if (ev.kind === 'new') nar = { emoji: '🌱', title: `${nm} is core → new cluster ${ev.cluster + 1}`, text: `ε-neighbours of ${nm}: ${list} (total ${ev.nbrs.length} ≥ ${S.minPts}).${added}` };
-      else if (ev.kind === 'expand') nar = { emoji: '🌊', title: `${nm} is core too → keep expanding`, text: `ε-neighbours: ${list} (total ${ev.nbrs.length}).${added || ' All of them are already in the cluster.'}` };
-      else if (ev.kind === 'border') nar = { emoji: '🚪', title: `${nm} is a border point of cluster ${ev.cluster + 1}`, text: `Only ${ev.nbrs.length} point${ev.nbrs.length === 1 ? '' : 's'} within ε (< ${S.minPts}), so it can’t grow the cluster — but a core point reached it.` };
-      else nar = { emoji: '🫥', title: `${nm} looks like noise (for now)`, text: `Only ${ev.nbrs.length} within ε (< ${S.minPts}) and no cluster has reached it. It can still be rescued as a border point later.` };
+      if (ev.kind === 'new') nar = { emoji: '', title: `${nm} is core → new cluster ${ev.cluster + 1}`, text: `ε-neighbours of ${nm}: ${list} (total ${ev.nbrs.length} ≥ ${S.minPts}).${added}` };
+      else if (ev.kind === 'expand') nar = { emoji: '', title: `${nm} is core too → keep expanding`, text: `ε-neighbours: ${list} (total ${ev.nbrs.length}).${added || ' All of them are already in the cluster.'}` };
+      else if (ev.kind === 'border') nar = { emoji: '', title: `${nm} is a border point of cluster ${ev.cluster + 1}`, text: `Only ${ev.nbrs.length} point${ev.nbrs.length === 1 ? '' : 's'} within ε (< ${S.minPts}), so it can’t grow the cluster — but a core point reached it.` };
+      else nar = { emoji: '', title: `${nm} looks like noise (for now)`, text: `Only ${ev.nbrs.length} within ε (< ${S.minPts}) and no cluster has reached it. It can still be rescued as a border point later.` };
     }
     L.narrate(nar, active);
     renderWorked();

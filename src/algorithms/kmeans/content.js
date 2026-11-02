@@ -16,7 +16,7 @@ export const PHASE_TRACK = [
   { id: 'init', label: 'Place ★' },
   { id: 'assign', label: 'Assign', loop: true },
   { id: 'update', label: 'Update', loop: true },
-  { id: 'converged', label: 'Done 🎉' },
+  { id: 'converged', label: 'Done ' },
 ];
 
 export function narration(S) {
@@ -24,14 +24,14 @@ export function narration(S) {
   const initName = { random: 'random data points', pp: 'K-Means++', spots: 'random spots', farthest: 'the two farthest points (modified k-means)', given: 'the starting centroids from the slide' }[S.init];
   switch (S.phase) {
     case 'empty':
-      return { emoji: '👋', title: 'Give me some data!', text: 'Pick a dataset on the left, or <b>click on the canvas</b> to drop points yourself. Drag to spray a few in a row.' };
+      return { emoji: '', title: 'Give me some data!', text: 'Pick a dataset on the left, or <b>click on the canvas</b> to drop points yourself. Drag to spray a few in a row.' };
     case 'ready':
-      return { emoji: '🤔', title: `Ready to find ${S.K} groups`, text: `I see <b>${S.points.length}</b> points with no labels. Press <b>Step</b> (or ▶) and I’ll drop <b>${S.K}</b> centroids — the ★ stars — to start.` };
+      return { emoji: '', title: `Ready to find ${S.K} groups`, text: `I see <b>${S.points.length}</b> points with no labels. Press <b>Step</b> (or ▶) and I’ll drop <b>${S.K}</b> centroids — the ★ stars — to start.` };
     case 'init':
-      return { emoji: '⭐', title: `Step 1 · Dropped ${K} stars`, text: `I placed the stars using <b>${initName}</b>. They’re just guesses for now. Next, every point will look for its <b>closest</b> star.` };
+      return { emoji: '', title: `Step 1 · Dropped ${K} stars`, text: `I placed the stars using <b>${initName}</b>. They’re just guesses for now. Next, every point will look for its <b>closest</b> star.` };
     case 'assign':
       return {
-        emoji: '🧲',
+        emoji: '',
         title: `Assign · round ${S.iter + 1}`,
         text: S.lastChanged === S.points.length
           ? `Every point joined its <b>nearest ★</b> and took its color. The shaded regions show which star “owns” each spot.`
@@ -40,17 +40,17 @@ export function narration(S) {
     case 'update': {
       const extra = S.emptyNote ? ` ${S.emptyNote}` : '';
       return {
-        emoji: '🚶',
+        emoji: '',
         title: `Update · round ${S.iter}`,
         text: `Each ★ walked to the <b>average position</b> of its own points (the middle of its team). Biggest move: <b>${S.lastShift.toFixed(3)}</b>.${extra}`,
       };
     }
     case 'converged':
-      return { emoji: '🎉', title: `Done after ${S.iter} round${S.iter === 1 ? '' : 's'}!`, text: `No point switched team, so the stars won’t move again — that’s <b>convergence</b>. Try dragging a ★ somewhere silly and press ▶ again.` };
+      return { emoji: '', title: `Done after ${S.iter} round${S.iter === 1 ? '' : 's'}!`, text: `No point switched team, so the stars won’t move again — that’s <b>convergence</b>. Try dragging a ★ somewhere silly and press ▶ again.` };
     case 'edited':
-      return { emoji: '✋', title: 'You changed things!', text: 'Points instantly re-picked their nearest ★. Press <b>Step</b> or ▶ to let the stars catch up.' };
+      return { emoji: '', title: 'You changed things!', text: 'Points instantly re-picked their nearest ★. Press <b>Step</b> or ▶ to let the stars catch up.' };
     default:
-      return { emoji: '🙂', title: '', text: '' };
+      return { emoji: '', title: '', text: '' };
   }
 }
 
@@ -61,7 +61,7 @@ export function intuitionTab() {
     P('K-Means is an <b>unsupervised</b> algorithm: the points have no labels and no right answers. Its job is to split them into <b>K groups</b> (clusters) so that points in the same group sit close together.'),
     P('Each group has a center called a <b>centroid</b> — the <span class="legend-star">★</span> stars on the canvas.'),
     h('div', { class: 'callout' },
-      h('strong', {}, '🍦 Ice-cream truck analogy'),
+      h('strong', {}, 'Ice-cream truck analogy'),
       P('Imagine K ice-cream trucks parked in a park. Everyone walks to the <b>nearest</b> truck. Then each truck drives to the <b>middle</b> of its own crowd. Some people now have a closer truck, so they switch. Repeat until nobody switches.'),
     ),
     h('h4', {}, 'The four steps'),
@@ -79,7 +79,7 @@ export function intuitionTab() {
       h('li', { html: 'It’s used for customer segmentation, compressing image colors, grouping documents and more.' }),
     ),
     h('div', { class: 'callout mint' },
-      P('🎯 <b>Inertia</b> (the chart above) adds up how far every point is from its own star (squared). Lower = tighter groups. Watch it drop with every step!'),
+      P('<b>Inertia</b> (the chart above) adds up how far every point is from its own star (squared). Lower = tighter groups. Watch it drop with every step!'),
     ),
   );
 }
@@ -150,17 +150,17 @@ export function challengesTab(actions) {
       answer ? h('details', {}, h('summary', {}, 'What should I notice?'), h('p', { html: answer })) : null,
     );
   return h('div', { class: 'learn' },
-    card('🫧', 'Watch it work', 'Load three clean blobs with K = 3 and press play. Count how many rounds it takes.', 'Set it up', actions.basic,
+    card('', 'Watch it work', 'Load three clean blobs with K = 3 and press play. Count how many rounds it takes.', 'Set it up', actions.basic,
       'Usually just 2–5 rounds. Each round has two steps: points switch color (assign), then stars move (update). The inertia chart only ever goes down.'),
-    card('😬', 'A bad start', 'Two stars start inside the same blob, and one sits between the other two. Press play and see where they end up.', 'Load tricky start', actions.tricky,
+    card('', 'A bad start', 'Two stars start inside the same blob, and one sits between the other two. Press play and see where they end up.', 'Load tricky start', actions.tricky,
       'It gets stuck! One blob is split in half while two blobs share a star. This is a <b>local minimum</b>. Press Reset and try again with <b>K-Means++</b> — it almost never starts this badly.'),
-    card('🌙', 'Moons', 'Two curved moons, K = 2. Will K-Means find the two moons?', 'Load moons', actions.moons,
+    card('', 'Moons', 'Two curved moons, K = 2. Will K-Means find the two moons?', 'Load moons', actions.moons,
       'No — it cuts straight across both moons. K-Means borders are always straight lines (look at the shaded regions), so curved shapes need other algorithms like DBSCAN or spectral clustering.'),
-    card('📐', 'Find the best K', 'Load blobs with an unknown number of groups, then use the elbow chart to guess K.', 'Load mystery blobs', actions.elbow,
+    card('', 'Find the best K', 'Load blobs with an unknown number of groups, then use the elbow chart to guess K.', 'Load mystery blobs', actions.elbow,
       'Look for where the bars stop shrinking a lot. Click that bar to set K, then press play to check your guess.'),
-    card('✋', 'Be the algorithm', 'After it converges, <b>drag a ★</b> somewhere else. Watch the colored regions and the points react, then press play again.', null, null,
+    card('', 'Be the algorithm', 'After it converges, <b>drag a ★</b> somewhere else. Watch the colored regions and the points react, then press play again.', null, null,
       'The regions update live because every spot just belongs to its nearest star. Once you let go and press play, the stars walk back to a stable spot — maybe a different one!'),
-    card('⚖️', 'Uneven groups', 'One huge group and two tiny ones, K = 3.', 'Load uneven', actions.uneven,
+    card('', 'Uneven groups', 'One huge group and two tiny ones, K = 3.', 'Load uneven', actions.uneven,
       'Look at the borders: each one sits exactly halfway between two stars, no matter how big the groups are. So the outer edge of the big group gets “stolen” by the small ones. K-Means quietly assumes every group has a similar size and spread.'),
   );
 }

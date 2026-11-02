@@ -16,7 +16,7 @@ export function intuitionTab() {
     h('h4', {}, 'Why HDBSCAN?'),
     P('DBSCAN uses <b>one</b> ε for the whole map. If one cluster is tight and another is loose, no single ε works. HDBSCAN effectively tries <b>every</b> ε and keeps the clusters that survive the longest.'),
     h('div', { class: 'callout' },
-      h('strong', {}, '🏔️ Island analogy'),
+      h('strong', {}, 'Island analogy'),
       P('Think of density as a landscape and imagine the sea level slowly rising. Low areas flood first; dense areas stay above water as islands. Some islands split into smaller ones as the water rises. HDBSCAN keeps the islands that stay dry for the longest stretch of sea levels — the most <b>stable</b> ones.'),
     ),
     h('h4', {}, 'The six steps'),
@@ -67,13 +67,13 @@ export function challengesTab(actions) {
     answer ? h('details', {}, h('summary', {}, 'What should I notice?'), h('p', { html: answer })) : null,
   );
   return h('div', { class: 'learn' },
-    card('📝', 'Reproduce the slides', 'Load A–F and step through: core distances, mutual reachability, MST, then the threshold cut.', 'Load slide example', actions.lec,
+    card('', 'Reproduce the slides', 'Load A–F and step through: core distances, mutual reachability, MST, then the threshold cut.', 'Load slide example', actions.lec,
       'Core distances 1.41, 1, 1.41, 7.07, 7.21, 74.95. MST edges A–B, B–C, C–D, D–E, D–F. Cutting at ε = 7 leaves (A, B, C) as the only cluster.'),
-    card('🌗', 'Where DBSCAN fails', 'Load the three clusters with different densities and run HDBSCAN to the end.', 'Load densities', actions.density,
+    card('', 'Where DBSCAN fails', 'Load the three clusters with different densities and run HDBSCAN to the end.', 'Load densities', actions.density,
       'HDBSCAN finds all three groups and leaves the scattered points as noise — no single DBSCAN ε could do that.'),
-    card('✂️', 'Threshold vs stability', 'With the same data, switch “Cluster extraction” to Threshold and drag ε.', 'Load noisy moons', actions.moons,
+    card('', 'Threshold vs stability', 'With the same data, switch “Cluster extraction” to Threshold and drag ε.', 'Load noisy moons', actions.moons,
       'A fixed threshold behaves like DBSCAN: too small and clusters shatter, too big and they merge. Stability picks good clusters without any ε.'),
-    card('📏', 'Min cluster size', 'After it finishes, raise and lower <i>min cluster size</i>.', null, null,
+    card('', 'Min cluster size', 'After it finishes, raise and lower <i>min cluster size</i>.', null, null,
       'Small values allow tiny clusters (sometimes splitting real ones). Large values merge small groups into noise or into bigger clusters.'),
   );
 }

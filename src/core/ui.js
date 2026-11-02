@@ -16,10 +16,30 @@ export function h(tag, attrs = {}, ...children) {
   }
   for (const c of children.flat()) {
     if (c == null || c === false) continue;
-    el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+    if (c instanceof Node) el.append(c);
+    else appendText(el, String(c));
   }
   return el;
 }
+
+// Greek letters (ε, λ, μ …) must not be uppercased by the all-caps labels, so wrap them.
+const GREEK = /[α-ωϵϑϕ]+/g;
+export function appendText(el, text) {
+  if (!GREEK.test(text)) { el.append(document.createTextNode(text)); return; }
+  GREEK.lastIndex = 0;
+  let last = 0;
+  for (const m of text.matchAll(GREEK)) {
+    if (m.index > last) el.append(document.createTextNode(text.slice(last, m.index)));
+    const s = document.createElement('span');
+    s.className = 'gk';
+    s.textContent = m[0];
+    el.append(s);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) el.append(document.createTextNode(text.slice(last)));
+}
+/** Set an element's text, protecting Greek letters from text-transform. */
+export function setText(el, text) { el.replaceChildren(); appendText(el, String(text)); }
 
 export function section(title, ...children) {
   return h('section', { class: 'panel-section' }, h('h3', { class: 'panel-title' }, title), ...children);

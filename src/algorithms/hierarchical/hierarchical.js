@@ -7,7 +7,7 @@ import { gauss, clip, blobs, moons } from '../../core/datasets.js';
 import { agglomerate, labelsAfter, leafOrder, mds2, METRICS } from './algo.js';
 import { LECTURES, LINKAGE_INFO, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const FAINT = new THREE.Color(0xd9cfc0);
+const FAINT = new THREE.Color(0xeadbc4);
 
 function bridge(n) {
   const out = [];
@@ -18,7 +18,7 @@ function bridge(n) {
   for (let i = 0; i < b; i++) out.push({ x: -0.35 + (0.7 * (i + 0.5)) / b + gauss() * 0.01, y: gauss() * 0.02 });
   return out;
 }
-const BRIDGE = { id: 'bridge', label: 'Bridge', emoji: '🌉', make: bridge, note: 'Two blobs joined by a thin line of points.' };
+const BRIDGE = { id: 'bridge', label: 'Bridge', emoji: '', make: bridge, note: 'Two blobs joined by a thin line of points.' };
 
 export function mount(root) {
   const S = {
@@ -29,7 +29,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { title: 'Hierarchical Clustering', emoji: '🌳', category: 'Unsupervised · Clustering', level: 'Beginner friendly', blurb: 'Merge the two closest clusters again and again, and grow a family tree of your data.' },
+    meta: { accent: '#7FD8BE', title: 'Hierarchical Clustering', emoji: '', category: 'Unsupervised · Clustering', level: 'Beginner friendly', blurb: 'Merge the two closest clusters again and again, and grow a family tree of your data.' },
     datasets: ['blobs', 'moons', BRIDGE, 'rings', 'uniform', 'blank'],
     defaultDataset: 'blobs',
     n: { min: 6, max: 200, step: 2, value: 48 },
@@ -40,15 +40,14 @@ export function mount(root) {
       { id: 'ready', label: 'Every point alone' },
       { id: 'merge', label: 'Merge closest' },
       { id: 'update', label: 'Update distances', loopBack: true },
-      { id: 'done', label: 'Dendrogram ✂️' },
+      { id: 'done', label: 'Dendrogram ' },
     ],
     learnTabs: [
-      { id: 'intuition', label: '💡 Intuition', render: intuitionTab },
+      { id: 'intuition', label: 'Intuition', render: intuitionTab },
       { id: 'math', label: '∑ Math', render: mathTab },
-      { id: 'try', label: '🎯 Try this', render: () => challengesTab(actions) },
+      { id: 'try', label: 'Try this', render: () => challengesTab(actions) },
     ],
   });
-  L.lab.el.querySelector('.lab-emoji').style.background = '#8AC926';
 
   const n = () => L.points.length;
   const nameOf = (i) => L.points[i]?.name || `P${i + 1}`;
@@ -100,7 +99,7 @@ export function mount(root) {
 
   function doStep() {
     if (!S.res || n() < 2) { L.toast('Need at least 2 points'); return false; }
-    if (S.phase === 'done') { L.toast('All merged — drag the cut line on the dendrogram ✂️'); return false; }
+    if (S.phase === 'done') { L.toast('All merged — drag the cut line on the dendrogram '); return false; }
     S.m++;
     S.anim = 0;
     S.lastPop = S.m - 1;
@@ -168,7 +167,7 @@ export function mount(root) {
   });
   const metricSeg = segmented({
     label: 'Distance',
-    options: [{ value: 'euclidean', label: '📏 Euclidean' }, { value: 'manhattan', label: '🏙️ Manhattan' }],
+    options: [{ value: 'euclidean', label: 'Euclidean' }, { value: 'manhattan', label: 'Manhattan' }],
     value: S.metric, onChange: (v) => setMetric(v),
   });
   const kSlider = slider({
@@ -176,11 +175,11 @@ export function mount(root) {
     onInput: (v) => { S.K = Math.min(v, Math.max(n(), 1)); refresh(); },
     hint: 'Used once all merges are done. You can also drag the cut line on the dendrogram.',
   });
-  const tLines = toggle({ label: 'Merge lines', emoji: '🔗', value: true, onChange: (v) => (S.show.lines = v) });
-  const tCents = toggle({ label: 'Cluster centres', emoji: '✚', value: true, onChange: (v) => (S.show.centroids = v) });
+  const tLines = toggle({ label: 'Merge lines', emoji: '', value: true, onChange: (v) => (S.show.lines = v) });
+  const tCents = toggle({ label: 'Cluster centres', emoji: '', value: true, onChange: (v) => (S.show.centroids = v) });
   L.addControls(
     section([L.num(3), 'Hierarchical settings'], linkSeg.el, linkHint, metricSeg.el, kSlider.el,
-      button('⏩ Finish all merges', finish, { variant: 'btn-block' })),
+      button('Finish all merges', finish, { variant: 'btn-block' })),
     section([L.num(4), 'Show'], tLines.el, tCents.el),
   );
 
@@ -189,7 +188,7 @@ export function mount(root) {
   const dendroNote = h('div', { class: 'chart-note' });
   const stats = statTiles([['clusters', 'Clusters'], ['merge', 'Last merge'], ['steps', 'Merges']]);
   const numbers = h('div', { class: 'card side-card' },
-    h('h3', {}, '🌳 Dendrogram'),
+    h('h3', {}, 'Dendrogram'),
     stats.el,
     dendro,
     dendroNote,
@@ -206,9 +205,9 @@ export function mount(root) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     const N = n();
-    ctx.font = '600 11px Nunito, system-ui, sans-serif';
+    ctx.font = '600 11px JetBrains Mono Variable, monospace';
     if (!S.res || N < 2) {
-      ctx.fillStyle = '#8A8197'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#7A7068'; ctx.textAlign = 'center';
       ctx.fillText('Add at least 2 points', W / 2, H / 2);
       dendroGeom = null;
       return;
@@ -224,7 +223,7 @@ export function mount(root) {
     for (let i = 0; i < N; i++) node.set(i, { x: xLeaf.get(i), hgt: 0 });
 
     // y ticks
-    ctx.strokeStyle = '#EDE3D2'; ctx.fillStyle = '#8A8197'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1;
+    ctx.strokeStyle = '#F5E2C6'; ctx.fillStyle = '#7A7068'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1;
     for (let i = 0; i <= 3; i++) {
       const v = (maxH * i) / 3, y = yOf(v);
       ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
@@ -244,14 +243,14 @@ export function mount(root) {
       const below = k < cutM;
       const root = lab[mg.members[0]];
       const c = below ? COLORS[S.colorOf.get(root) ?? 0] : null;
-      ctx.strokeStyle = below ? '#' + c.getHexString() : '#B8AE9C';
+      ctx.strokeStyle = below ? '#' + c.getHexString() : '#D9C6A8';
       ctx.lineWidth = k === S.m - 1 && S.phase !== 'done' ? 3.2 : 2;
       const yM = yOf(mg.height);
       ctx.beginPath();
       ctx.moveTo(A.x, yOf(A.hgt)); ctx.lineTo(A.x, yM); ctx.lineTo(B.x, yM); ctx.lineTo(B.x, yOf(B.hgt));
       ctx.stroke();
       if (N <= 12) {
-        ctx.fillStyle = '#5A5070'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillStyle = '#4A433D'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
         ctx.fillText(fmt(mg.height), nd.x, yM - 2);
       }
     }
@@ -261,13 +260,13 @@ export function mount(root) {
       const root = lab[leaf];
       const c = S.colorOf.get(root);
       ctx.beginPath(); ctx.arc(x, yOf(0), 3, 0, Math.PI * 2);
-      ctx.fillStyle = c != null && cutM > 0 && root >= N ? '#' + COLORS[c].getHexString() : '#BDB5A6';
+      ctx.fillStyle = c != null && cutM > 0 && root >= N ? '#' + COLORS[c].getHexString() : '#B5ABA0';
       ctx.fill();
       if (showLeafNames) {
-        ctx.fillStyle = '#2B2240'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        ctx.font = '700 10.5px Nunito, system-ui, sans-serif';
+        ctx.fillStyle = '#2A2622'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.font = '700 10.5px JetBrains Mono Variable, monospace';
         ctx.fillText(nameOf(leaf), x, yOf(0) + 6);
-        ctx.font = '600 11px Nunito, system-ui, sans-serif';
+        ctx.font = '600 11px JetBrains Mono Variable, monospace';
       }
     });
     // cut line
@@ -276,13 +275,13 @@ export function mount(root) {
       const lo = merges[N - S.K - 1]?.height ?? 0, hi = merges[N - S.K]?.height ?? maxH;
       const hc = (lo + hi) / 2;
       cutY = yOf(hc);
-      ctx.setLineDash([6, 5]); ctx.strokeStyle = '#2B2240'; ctx.lineWidth = 1.8;
+      ctx.setLineDash([6, 5]); ctx.strokeStyle = '#2A2622'; ctx.lineWidth = 1.8;
       ctx.beginPath(); ctx.moveTo(pad.l, cutY); ctx.lineTo(W - pad.r, cutY); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = '#2B2240'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.font = '800 11px Nunito, system-ui, sans-serif';
-      ctx.fillText(`✂ K = ${S.K}`, W - pad.r - 2, cutY - 3);
+      ctx.fillStyle = '#2A2622'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.font = '800 11px JetBrains Mono Variable, monospace';
+      ctx.fillText(`K = ${S.K}`, W - pad.r - 2, cutY - 3);
     }
-    ctx.strokeStyle = '#2B2240'; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#2A2622'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(pad.l, yOf(0)); ctx.lineTo(W - pad.r, yOf(0)); ctx.stroke();
     dendroGeom = { yOf, maxH, pad, ph, cutY };
   }
@@ -298,7 +297,7 @@ export function mount(root) {
     if (K !== S.K) { S.K = K; kSlider.set(Math.min(K, 10)); refresh(); }
   };
   dendro.addEventListener('pointerdown', (e) => {
-    if (S.phase !== 'done') { L.toast('Finish the merges first, then cut ✂️'); return; }
+    if (S.phase !== 'done') { L.toast('Finish the merges first, then cut '); return; }
     cutDrag = true; dendro.setPointerCapture(e.pointerId);
     cutFromY(e.clientY - dendro.getBoundingClientRect().top);
   });
@@ -386,16 +385,16 @@ export function mount(root) {
     let nar;
     let active = 'ready';
     if (N < 2) {
-      nar = { emoji: '👋', title: 'Give me some points!', text: 'Pick a dataset, a lecture example, or click on the canvas.' };
+      nar = { emoji: '', title: 'Give me some points!', text: 'Pick a dataset, a lecture example, or click on the canvas.' };
     } else if (S.phase === 'ready') {
-      nar = { emoji: '🧍', title: `${N} points, ${N} clusters`, text: `Every point starts alone. Each <b>Step</b> merges the two closest clusters using <b>${S.linkage}</b> linkage${S.matrix ? '' : ` and <b>${S.metric}</b> distance`}.` };
+      nar = { emoji: '', title: `${N} points, ${N} clusters`, text: `Every point starts alone. Each <b>Step</b> merges the two closest clusters using <b>${S.linkage}</b> linkage${S.matrix ? '' : ` and <b>${S.metric}</b> distance`}.` };
     } else if (S.phase === 'merge') {
       const mg = merges[S.m - 1];
       active = 'merge';
-      nar = { emoji: '🤝', title: `Merge ${S.m}: ${clusterName(mg.members.slice(0, mg.sizeA))} + ${clusterName(mg.members.slice(mg.sizeA))}`, text: `They were the closest pair at distance <b>${fmt(mg.height)}</b>. Now ${N - S.m} clusters are left, and distances to the new cluster get updated.` };
+      nar = { emoji: '', title: `Merge ${S.m}: ${clusterName(mg.members.slice(0, mg.sizeA))} + ${clusterName(mg.members.slice(mg.sizeA))}`, text: `They were the closest pair at distance <b>${fmt(mg.height)}</b>. Now ${N - S.m} clusters are left, and distances to the new cluster get updated.` };
     } else {
       active = 'done';
-      nar = { emoji: '🌳', title: `One big tree after ${merges.length} merges`, text: `Drag the <b>✂ cut line</b> on the dendrogram or use K to choose how many clusters you want. Right now: <b>K = ${S.K}</b>.` };
+      nar = { emoji: '', title: `One big tree after ${merges.length} merges`, text: `Drag the <b>cut line</b> on the dendrogram or use K to choose how many clusters you want. Right now: <b>K = ${S.K}</b>.` };
     }
     L.narrate(nar, active);
 
@@ -434,7 +433,7 @@ export function mount(root) {
           parts.push(para(katexHtml(`Centroid of ${C} (mean of all ${mg.size} points): $\\left(\\frac{${mg.sizeA}\\cdot${fmt(ca.x, 3)}+${mg.sizeB}\\cdot${fmt(cb.x, 3)}}{${mg.size}}, \\frac{${mg.sizeA}\\cdot${fmt(ca.y, 3)}+${mg.sizeB}\\cdot${fmt(cb.y, 3)}}{${mg.size}}\\right) = ${pt(mg.centroid, 3)}$`)));
           if (mg.sizeA !== mg.sizeB && L.lecture?.id === 'lec-h1') {
             const med = { x: (ca.x + cb.x) / 2, y: (ca.y + cb.y) / 2 };
-            parts.push(note(`📌 <b>Slide note:</b> the slides average the two centroids and get ${pt(med, 3)}. That’s <i>median</i> linkage. The true centroid of all ${mg.size} points is ${pt(mg.centroid, 3)}. The merge order and heights are the same either way.`, 'warn'));
+            parts.push(note(`<b>Slide note:</b> the slides average the two centroids and get ${pt(med, 3)}. That’s <i>median</i> linkage. The true centroid of all ${mg.size} points is ${pt(mg.centroid, 3)}. The merge order and heights are the same either way.`, 'warn'));
           }
         }
       }

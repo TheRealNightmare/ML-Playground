@@ -26,8 +26,9 @@ const INIT_INFO = {
 
 export function mount(root) {
   const lab = createLab(root, {
+    accent: '#FFE07A',
     title: 'K-Means Clustering',
-    emoji: '⭐',
+    emoji: '',
     category: 'Unsupervised · Clustering',
     level: 'Beginner friendly',
     blurb: 'Group unlabeled points into K clusters by moving K centroids again and again.',
@@ -78,7 +79,7 @@ export function mount(root) {
 
   /* ---------------- Overlays ---------------- */
   const toastEl = h('div', { class: 'toast', role: 'status' });
-  const emptyEl = h('div', { class: 'stage-empty' }, h('div', {}, h('span', { class: 'big' }, '👆'), 'Click anywhere to add points', h('br'), h('small', {}, 'or pick a dataset')));
+  const emptyEl = h('div', { class: 'stage-empty' }, h('div', {}, h('span', { class: 'big' }, ''), 'Click anywhere to add points', h('br'), h('small', {}, 'or pick a dataset')));
   const tipEl = h('div', { class: 'stage-tip' });
   lab.overlay.append(emptyEl, tipEl, toastEl);
   let toastTimer = 0;
@@ -99,7 +100,7 @@ export function mount(root) {
   lab.playbarSlot.append(player.el);
   player.el.append(h('span', { class: 'kbd-hint' }, h('span', { class: 'kbd' }, 'Space'), 'play ', h('span', { class: 'kbd' }, '→'), 'step ', h('span', { class: 'kbd' }, 'R'), 'reset'));
   player.onChange((playing) => {
-    if (playing && S.points.length === 0) { player.pause(); toast('Add some points first 🙂'); }
+    if (playing && S.points.length === 0) { player.pause(); toast('Add some points first '); }
   });
 
   /* ---------------- Points helpers ---------------- */
@@ -148,7 +149,7 @@ export function mount(root) {
   }
 
   function doStep() {
-    if (S.points.length === 0) { setPhase('empty'); toast('Add some points first 🙂'); return false; }
+    if (S.points.length === 0) { setPhase('empty'); toast('Add some points first '); return false; }
     if (S.phase === 'converged') { toast('Already converged — drag a ★ or change K'); return false; }
 
     if (S.cents.length === 0) {
@@ -459,7 +460,7 @@ export function mount(root) {
     h('button', { type: 'button', class: 'chip', 'data-id': d.id, onclick: () => { player.pause(); loadDataset(d.id); } },
       h('span', { class: 'emo' }, d.emoji), d.label),
   );
-  const lectureChip = h('button', { type: 'button', class: 'chip chip-lecture', 'data-id': 'lecture', onclick: () => loadLecture() }, h('span', { class: 'emo' }, '📝'), '5 points · k = 2');
+  const lectureChip = h('button', { type: 'button', class: 'chip chip-lecture', 'data-id': 'lecture', onclick: () => loadLecture() }, h('span', { class: 'emo' }, ''), '5 points · k = 2');
   datasetChips.push(lectureChip);
   const nSlider = slider({
     label: 'Number of points', min: 40, max: 800, step: 20, value: S.n,
@@ -469,9 +470,9 @@ export function mount(root) {
 
   const toolSeg = segmented({
     options: [
-      { value: 'draw', label: '✏️ Draw', title: 'Click to add a point, drag to move one' },
-      { value: 'spray', label: '💨 Spray', title: 'Hold and drag to spray many points' },
-      { value: 'erase', label: '🧽 Erase', title: 'Hold and drag to erase points' },
+      { value: 'draw', label: 'Draw', title: 'Click to add a point, drag to move one' },
+      { value: 'spray', label: 'Spray', title: 'Hold and drag to spray many points' },
+      { value: 'erase', label: 'Erase', title: 'Hold and drag to erase points' },
     ],
     value: S.tool,
     onChange: (v) => { S.tool = v; updateTip(); },
@@ -491,7 +492,7 @@ export function mount(root) {
       { value: 'random', label: 'Random pts' },
       { value: 'spots', label: 'Anywhere' },
       { value: 'farthest', label: 'Farthest' },
-      { value: 'given', label: '📝 Slide' },
+      { value: 'given', label: 'Slide' },
     ],
     value: S.init,
     wrap: true,
@@ -502,28 +503,28 @@ export function mount(root) {
   });
   const metricSeg = segmented({
     label: 'Distance',
-    options: [{ value: 'euclidean', label: '📏 Euclidean' }, { value: 'manhattan', label: '🏙️ Manhattan' }],
+    options: [{ value: 'euclidean', label: 'Euclidean' }, { value: 'manhattan', label: 'Manhattan' }],
     value: S.metric,
     onChange: (v) => setMetric(v),
   });
 
-  const tRegions = toggle({ label: 'Colored regions', emoji: '🗺️', value: S.show.regions, onChange: (v) => (S.show.regions = v) });
-  const tLinks = toggle({ label: 'Lines to their ★', emoji: '🔗', value: S.show.links, onChange: (v) => (S.show.links = v) });
-  const tTrails = toggle({ label: '★ footprints', emoji: '👣', value: S.show.trails, onChange: (v) => (S.show.trails = v) });
+  const tRegions = toggle({ label: 'Colored regions', emoji: '', value: S.show.regions, onChange: (v) => (S.show.regions = v) });
+  const tLinks = toggle({ label: 'Lines to their ★', emoji: '', value: S.show.links, onChange: (v) => (S.show.links = v) });
+  const tTrails = toggle({ label: '★ footprints', emoji: '', value: S.show.trails, onChange: (v) => (S.show.trails = v) });
 
-  const num = (n) => h('span', { class: 'num' }, n);
+  const num = (n) => h('span', { class: 'num' }, String(n).padStart(2, '0') + ' /');
   lab.controls.append(
     section([num(1), 'Data'],
       h('div', { class: 'chips' }, datasetChips.slice(0, -1)),
       h('div', { class: 'lecture-row' }, h('span', { class: 'field-label' }, 'From the lecture'), h('div', { class: 'chips chips-lecture' }, lectureChip)),
       datasetNote,
       nSlider.el,
-      button('🔄 New sample', () => { player.pause(); loadDataset(S.dataset); }, { variant: 'btn-block' }),
+      button('New sample', () => { player.pause(); loadDataset(S.dataset); }, { variant: 'btn-block' }),
     ),
     section([num(2), 'Draw your own'],
       toolSeg.el,
       h('span', { class: 'hint', html: 'Drag any point or ★ to move it. The algorithm reacts live.' }),
-      button('🗑️ Clear canvas', () => { player.pause(); leaveLecture(); S.points = []; resetAlgo(); datasetChips.forEach((b) => b.classList.remove('active')); S.dataset = 'blank'; scheduleElbow(true); }, { variant: 'btn-ghost btn-block' }),
+      button('Clear canvas', () => { player.pause(); leaveLecture(); S.points = []; resetAlgo(); datasetChips.forEach((b) => b.classList.remove('active')); S.dataset = 'blank'; scheduleElbow(true); }, { variant: 'btn-ghost btn-block' }),
     ),
     section([num(3), 'K-Means settings'],
       kSlider.el,
@@ -556,7 +557,7 @@ export function mount(root) {
   const chartLegend = h('div', { class: 'chart-legend' });
   const chartNote = h('div', { class: 'chart-note' });
   const chartSeg = segmented({
-    options: [{ value: 'inertia', label: '📉 Inertia' }, { value: 'elbow', label: '📐 Elbow (best K)' }],
+    options: [{ value: 'inertia', label: 'Inertia' }, { value: 'elbow', label: 'Elbow (best K)' }],
     value: 'inertia',
     onChange: (v) => { S.chartMode = v; if (v === 'elbow') computeElbow(); updateChart(); },
   });
@@ -564,7 +565,7 @@ export function mount(root) {
   const sizeLegend = h('div', { class: 'size-legend' });
 
   const numbersCard = h('div', { class: 'card side-card' },
-    h('h3', {}, '📊 Live numbers'),
+    h('h3', {}, 'Live numbers'),
     h('div', { class: 'stats' }, stat('iter', 'Round'), stat('J', 'Inertia'), stat('changed', 'Switched')),
     chartSeg.el,
     chart.canvas,
@@ -578,11 +579,11 @@ export function mount(root) {
   /* ---------------- Side: learn ---------------- */
   const mathEl = mathTab();
   const learnTabs = tabs([
-    { id: 'intuition', label: '💡 Intuition', render: intuitionTab },
+    { id: 'intuition', label: 'Intuition', render: intuitionTab },
     { id: 'math', label: '∑ Math', render: () => mathEl },
-    { id: 'try', label: '🎯 Try this', render: () => challengesTab(challengeActions) },
+    { id: 'try', label: 'Try this', render: () => challengesTab(challengeActions) },
   ]);
-  const learnCard = h('div', { class: 'card side-card' }, h('h3', {}, '📚 Learn'), learnTabs.el);
+  const learnCard = h('div', { class: 'card side-card' }, h('h3', {}, 'Learn'), learnTabs.el);
   lab.side.append(numbersCard, worked.el, learnCard);
 
   /* ---------------- Elbow ---------------- */
@@ -601,12 +602,12 @@ export function mount(root) {
   function updateChart() {
     if (S.chartMode === 'inertia') {
       chart.setLine(
-        S.history.map((d) => ({ y: d.J, color: d.kind === 'assign' ? '#4D96FF' : '#FF6B6B' })),
+        S.history.map((d) => ({ y: d.J, color: d.kind === 'assign' ? '#8EC9F5' : '#FF8C7A' })),
         { xLabel: 'step', empty: S.points.length ? 'Press Step to see inertia drop' : 'Add points first' },
       );
       chartLegend.replaceChildren(
-        h('span', {}, h('i', { style: { background: '#4D96FF' } }), 'after Assign'),
-        h('span', {}, h('i', { style: { background: '#FF6B6B' } }), 'after Update'),
+        h('span', {}, h('i', { style: { background: '#8EC9F5' } }), 'after Assign'),
+        h('span', {}, h('i', { style: { background: '#FF8C7A' } }), 'after Update'),
       );
       chartNote.innerHTML = S.history.length > 1
         ? 'Notice it <b>never goes up</b> — both steps can only make the groups tighter.'
@@ -620,10 +621,10 @@ export function mount(root) {
       }
       chart.setBars(elbowData.map((v, i) => ({
         label: String(i + 1), value: v,
-        color: i + 1 === S.K ? '#FFC93C' : '#D9CCF7',
+        color: i + 1 === S.K ? '#FFE07A' : '#EADBC4',
         highlight: i + 1 === S.K,
       })), { xLabel: 'K (number of clusters) — click a bar to use it' });
-      chartLegend.replaceChildren(h('span', {}, h('i', { style: { background: '#FFC93C' } }), `your K = ${S.K}`));
+      chartLegend.replaceChildren(h('span', {}, h('i', { style: { background: '#FFE07A' } }), `your K = ${S.K}`));
       chartNote.innerHTML = 'Best inertia found for each K. Find the <b>elbow</b>: the K after which bars stop shrinking much.';
     }
   }
@@ -647,7 +648,7 @@ export function mount(root) {
         if (i) track.append(h('span', { class: 'phase-arrow' }, i === 3 ? '⇄' : '→'));
         track.append(h('span', { class: 'phase-chip' + (i === activeIdx ? ' active' : i < activeIdx || (activeIdx === 2 && i === 3 && S.iter > 0) ? ' done' : '') }, p.label));
       });
-      const avatar = h('div', { class: 'narrator-avatar bounce' }, nar.emoji);
+      const avatar = h('div', { class: 'narrator-avatar bounce' }, String(Math.max(activeIdx, 0) + 1).padStart(2, '0'));
       lab.narrator.replaceChildren(
         avatar,
         h('div', { class: 'narrator-main' }, track, h('div', { class: 'narrator-title' }, nar.title), h('div', { class: 'narrator-text', html: nar.text })),
@@ -742,7 +743,7 @@ export function mount(root) {
         parts.push(step('New point (2, 7) — which cluster?'));
         parts.push(para(dd.map((d, i) => `d((2, 7), C${i + 1}) = ${fx(d)}`).join('<br>') + `<br>Since ${fx(dd[k])} &lt; ${fx(dd[1 - k])}, it belongs to <b>Cluster ${k + 1}</b>.`));
         const already = S.points.some((p) => { const d = dp(p); return Math.abs(d.x - 2) < 1e-6 && Math.abs(d.y - 7) < 1e-6; });
-        if (!already) parts.push(button('➕ Add (2, 7) to the canvas', () => {
+        if (!already) parts.push(button('Add (2, 7) to the canvas', () => {
           const w = space.w(q);
           const i = addPoint(w.x, w.y);
           if (i >= 0) { S.points[i].name = 'new'; afterEdit(); toast('Added (2, 7) — it joins its nearest ★'); }
@@ -754,9 +755,9 @@ export function mount(root) {
 
   function updateTip() {
     tipEl.textContent = {
-      draw: '✏️ Click to add · drag points or ★ to move',
-      spray: '💨 Hold & drag to spray points · drag ★ to move',
-      erase: '🧽 Hold & drag to erase · drag ★ to move',
+      draw: 'Click to add · drag points or ★ to move',
+      spray: 'Hold & drag to spray points · drag ★ to move',
+      erase: 'Hold & drag to erase · drag ★ to move',
     }[S.tool];
   }
 
@@ -789,7 +790,7 @@ export function mount(root) {
     elbow: () => {
       preset({ dataset: 'blobs', K: 2, init: 'pp' });
       S.chartMode = 'elbow'; chartSeg.set('elbow'); computeElbow(); updateChart();
-      toast('Check the elbow chart on the right 👉');
+      toast('Check the elbow chart on the right ');
     },
     uneven: () => preset({ dataset: 'uneven', K: 3, init: 'pp' }),
   };

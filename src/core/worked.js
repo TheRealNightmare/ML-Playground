@@ -1,5 +1,5 @@
-// Helpers for the "📝 Worked example" card that mirrors the lecture slides step by step.
-import { h } from './ui.js';
+// Helpers for the "Worked example" card that mirrors the lecture slides step by step.
+import { h, setText } from './ui.js';
 
 /** Round like the slides do (2 dp by default), dropping trailing zeros sensibly. */
 export function fmt(n, dp = 2) {
@@ -44,12 +44,12 @@ export function workedCard() {
   const body = h('div', { class: 'worked-body' });
   const sub = h('span', { class: 'worked-sub' });
   const el = h('div', { class: 'card side-card worked-card' },
-    h('h3', {}, '📝 Worked example', sub),
+    h('h3', {}, 'Worked example', sub),
     body,
   );
   return {
     el,
     show(v) { el.style.display = v ? '' : 'none'; },
-    set(nodes, subtitle = '') { body.replaceChildren(...[nodes].flat().filter(Boolean)); sub.textContent = subtitle; },
+    set(nodes, subtitle = '') { body.replaceChildren(...[nodes].flat().filter(Boolean)); setText(sub, subtitle); },
   };
 }

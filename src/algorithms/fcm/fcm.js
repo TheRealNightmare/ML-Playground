@@ -20,7 +20,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { title: 'Fuzzy C-Means', emoji: '🌈', category: 'Unsupervised · Soft clustering', level: 'Intermediate', blurb: 'Every point belongs to every cluster a little — watch memberships and colors blend.' },
+    meta: { accent: '#B9A6F2', title: 'Fuzzy C-Means', emoji: '', category: 'Unsupervised · Soft clustering', level: 'Intermediate', blurb: 'Every point belongs to every cluster a little — watch memberships and colors blend.' },
     datasets: ['overlap', 'blobs', 'uneven', 'moons', 'uniform', 'blank'],
     defaultDataset: 'overlap',
     n: { min: 20, max: 600, step: 20, value: 180 },
@@ -31,15 +31,14 @@ export function mount(root) {
       { id: 'init', label: 'Guess U⁽⁰⁾' },
       { id: 'cent', label: 'Centroids' },
       { id: 'mem', label: 'Memberships', loopBack: true },
-      { id: 'done', label: 'Done 🎉' },
+      { id: 'done', label: 'Done ' },
     ],
     learnTabs: [
-      { id: 'intuition', label: '💡 Intuition', render: intuitionTab },
+      { id: 'intuition', label: 'Intuition', render: intuitionTab },
       { id: 'math', label: '∑ Math', render: mathTab },
-      { id: 'try', label: '🎯 Try this', render: () => challengesTab(actions) },
+      { id: 'try', label: 'Try this', render: () => challengesTab(actions) },
     ],
   });
-  L.lab.el.querySelector('.lab-emoji').style.background = '#F15BB5';
   L.regions.setFuzzy(true, S.m);
 
   const n = () => L.points.length;
@@ -182,7 +181,7 @@ export function mount(root) {
   const initHint = h('span', { class: 'hint' }, 'Random U is the slide method: every point gets random shares. Centroids start near the middle and slowly pull apart.');
   const initSeg = segmented({
     label: 'First guess U⁽⁰⁾',
-    options: [{ value: 'randomU', label: '🎲 Random U' }, { value: 'points', label: '📍 From c points' }],
+    options: [{ value: 'randomU', label: 'Random U' }, { value: 'points', label: 'From c points' }],
     value: S.init,
     onChange: (v) => {
       S.init = v;
@@ -192,8 +191,8 @@ export function mount(root) {
       if (S.phase !== 'ready') reset();
     },
   });
-  const tHard = toggle({ label: 'Show hard labels (argmax)', emoji: '🔨', value: false, onChange: (v) => { S.hard = v; recolor(); } });
-  const tField = toggle({ label: 'Membership field', emoji: '🌈', value: true, onChange: (v) => { S.showField = v; } });
+  const tHard = toggle({ label: 'Show hard labels (argmax)', emoji: '', value: false, onChange: (v) => { S.hard = v; recolor(); } });
+  const tField = toggle({ label: 'Membership field', emoji: '', value: true, onChange: (v) => { S.showField = v; } });
   paintDots();
   L.addControls(
     section([L.num(3), 'Fuzzy C-Means settings'], cSlider.el, dots, mSlider.el, initSeg.el, initHint, epsSeg.el),
@@ -204,12 +203,12 @@ export function mount(root) {
   const stats = statTiles([['iter', 'Round'], ['J', 'J_m'], ['delta', 'Max Δu']]);
   const chart = new MiniChart({ height: 130, xLabel: 'step', empty: 'Press Step to start' });
   const legend = h('div', { class: 'chart-legend' },
-    h('span', {}, h('i', { style: { background: '#FFC93C' } }), 'after centroids'),
-    h('span', {}, h('i', { style: { background: '#9B5DE5' } }), 'after memberships'));
+    h('span', {}, h('i', { style: { background: '#FFE07A' } }), 'after centroids'),
+    h('span', {}, h('i', { style: { background: '#B9A6F2' } }), 'after memberships'));
   const inspectTitle = h('div', { class: 'sub-label' }, 'Memberships');
   const inspectBars = h('div', { class: 'member-bars' });
   const numbers = h('div', { class: 'card side-card' },
-    h('h3', {}, '📊 Live numbers'), stats.el, chart.canvas, legend, inspectTitle, inspectBars);
+    h('h3', {}, 'Live numbers'), stats.el, chart.canvas, legend, inspectTitle, inspectBars);
   L.mountSide(numbers);
 
   function mostUncertain() {
@@ -281,35 +280,35 @@ export function mount(root) {
     switch (S.phase) {
       case 'ready':
         active = 'ready';
-        nar = N ? { emoji: '🤔', title: `Ready: ${N} points, c = ${S.c}, m = ${fmt(S.m, 1)}`, text: 'Press <b>Step</b> and I’ll make a first guess of the membership table <b>U</b> — every point gets a share of every cluster.' }
-          : { emoji: '👋', title: 'Give me some points!', text: 'Pick a dataset or click on the canvas.' };
+        nar = N ? { emoji: '', title: `Ready: ${N} points, c = ${S.c}, m = ${fmt(S.m, 1)}`, text: 'Press <b>Step</b> and I’ll make a first guess of the membership table <b>U</b> — every point gets a share of every cluster.' }
+          : { emoji: '', title: 'Give me some points!', text: 'Pick a dataset or click on the canvas.' };
         break;
       case 'init':
         active = 'init';
-        nar = { emoji: '🎲', title: 'Step 1 · First guess of U', text: S.lecture?.U0 ? 'These are the memberships <b>U⁽⁰⁾</b> given on the slide. Each row adds up to 1.' : S.init === 'points' ? 'Memberships computed from c random points as rough centres. Next: compute each centroid as a <b>weighted average</b>.' : 'Random memberships, so the colors are a muddy mix. Next: compute each centroid as a <b>weighted average</b>.' };
+        nar = { emoji: '', title: 'Step 1 · First guess of U', text: S.lecture?.U0 ? 'These are the memberships <b>U⁽⁰⁾</b> given on the slide. Each row adds up to 1.' : S.init === 'points' ? 'Memberships computed from c random points as rough centres. Next: compute each centroid as a <b>weighted average</b>.' : 'Random memberships, so the colors are a muddy mix. Next: compute each centroid as a <b>weighted average</b>.' };
         break;
       case 'cent':
         active = 'cent';
-        nar = { emoji: '⭐', title: `Centroids · round ${S.iter + 1}`, text: `Each ★ moved to the average of <b>all</b> points, weighted by u<sup>m</sup>. Strong members pull harder.` };
+        nar = { emoji: '', title: `Centroids · round ${S.iter + 1}`, text: `Each ★ moved to the average of <b>all</b> points, weighted by u<sup>m</sup>. Strong members pull harder.` };
         break;
       case 'mem':
         active = 'mem';
-        nar = { emoji: '🎨', title: `Memberships · round ${S.iter}`, text: `Every point re-measured its distance to each ★: closer means more membership. Biggest change: <b>${fmt(S.lastDelta, 3)}</b> (stop below ${S.eps}).` };
+        nar = { emoji: '', title: `Memberships · round ${S.iter}`, text: `Every point re-measured its distance to each ★: closer means more membership. Biggest change: <b>${fmt(S.lastDelta, 3)}</b> (stop below ${S.eps}).` };
         break;
       case 'done':
         active = 'done';
-        nar = { emoji: '🎉', title: `Converged after ${S.iter} rounds`, text: `No membership changed by more than ${S.eps}. Hover points to see their mixes, or drag <b>m</b> and watch the field change.` };
+        nar = { emoji: '', title: `Converged after ${S.iter} rounds`, text: `No membership changed by more than ${S.eps}. Hover points to see their mixes, or drag <b>m</b> and watch the field change.` };
         break;
       case 'edited':
         active = 'mem';
-        nar = { emoji: '✋', title: 'Memberships updated live', text: 'Points re-measured their distance to the ★s. Press <b>Step</b> to move the centroids again.' };
+        nar = { emoji: '', title: 'Memberships updated live', text: 'Points re-measured their distance to the ★s. Press <b>Step</b> to move the centroids again.' };
         break;
     }
     L.narrate(nar, active);
     stats.set('iter', S.iter);
     stats.set('J', S.cents.length ? fmt(F.objective(L.points, S.U, S.cents, S.m), 2) : '–');
     stats.set('delta', S.lastDelta == null ? '–' : fmt(S.lastDelta, 3));
-    chart.setLine(S.history.map((d) => ({ y: d.J, color: d.kind === 'cent' ? '#FFC93C' : '#9B5DE5' })), { xLabel: 'step' });
+    chart.setLine(S.history.map((d) => ({ y: d.J, color: d.kind === 'cent' ? '#FFE07A' : '#B9A6F2' })), { xLabel: 'step' });
     renderInspect();
     renderWorked();
   }
