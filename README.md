@@ -53,9 +53,13 @@ It is written for two audiences at once:
 | 1.3 | [Fuzzy C-Means](https://ml.mirazulislamnahid.com/#/fcm) | Unsupervised · Soft clustering | ✅ Live |
 | 1.4 | [DBSCAN](https://ml.mirazulislamnahid.com/#/dbscan) | Unsupervised · Density | ✅ Live |
 | 1.5 | [HDBSCAN](https://ml.mirazulislamnahid.com/#/hdbscan) | Unsupervised · Density | ✅ Live |
-| 2.1–2.3 | Decision Tree · Random Forest · Ensemble Learning | Trees & Ensembles | 🚧 Next |
-| 3.1–3.3 | AdaBoost · XGBoost · CatBoost | Boosting | 🚧 Planned |
-| 4.1 | Cross-Validation | Model Evaluation | 🚧 Planned |
+| 2.1 | [Decision Tree](https://ml.mirazulislamnahid.com/#/decision-tree) | Supervised · Trees | ✅ Live |
+| 2.2 | [Random Forest](https://ml.mirazulislamnahid.com/#/random-forest) | Supervised · Ensemble | ✅ Live |
+| 2.3 | [Ensemble Learning](https://ml.mirazulislamnahid.com/#/ensemble) | Concepts · Bias & variance | ✅ Live |
+| 3.1 | [AdaBoost](https://ml.mirazulislamnahid.com/#/adaboost) | Supervised · Boosting | ✅ Live |
+| 3.2 | [XGBoost](https://ml.mirazulislamnahid.com/#/xgboost) | Supervised · Boosting | ✅ Live |
+| 3.3 | [CatBoost](https://ml.mirazulislamnahid.com/#/catboost) | Supervised · Boosting | ✅ Live |
+| 4.1 | [Cross-Validation](https://ml.mirazulislamnahid.com/#/cross-validation) | Concepts · Evaluation | ✅ Live |
 
 <table>
 <tr>
@@ -65,14 +69,21 @@ It is written for two audiences at once:
 <tr>
 <td colspan="2"><img src="docs/dbscan.png" alt="DBSCAN on two moons with noise" /><br><sub><b>DBSCAN</b> — two moons found, noise left hollow, and a k-distance plot to choose ε.</sub></td>
 </tr>
+<tr>
+<td width="50%"><img src="docs/decision-tree.png" alt="Decision tree growing on the moons dataset with its tree diagram" /><br><sub><b>Decision Tree</b> — grown one split at a time; the tree diagram and the split-search curve update live.</sub></td>
+<td width="50%"><img src="docs/random-forest.png" alt="Random forest with bootstrap highlighting and out-of-bag error" /><br><sub><b>Random Forest</b> — bigger dots were drawn twice, hollow ones are out-of-bag; thumbnails show every tree.</sub></td>
+</tr>
+<tr>
+<td colspan="2"><img src="docs/xgboost.png" alt="XGBoost slide example with gradients, Hessians and gain" /><br><sub><b>XGBoost</b> — the four-sample slide example: split x &lt; 5, gain 0.667, leaf weights ±0.667, probabilities 0.661 / 0.339.</sub></td>
+</tr>
 </table>
 
 ### What every playground has
 
-- **Draw your own data.** Click to add points, drag to move them, spray whole clouds, erase. Everything re-runs live.
-- **Presets.** Blobs, moons, rings, uneven groups, noisy data, different densities, overlap, a smiley.
+- **Draw your own data.** Click to add points, drag to move them, spray whole clouds, erase. Everything re-runs live. On the supervised pages you pick the class of each new point, or switch to regression and draw (x, y) points.
+- **Presets.** Blobs, moons, rings, uneven groups, noisy data, different densities, a smiley — and for supervised learning: XOR, circles, spiral, noisy borders, three classes, imbalanced classes, and sine / steps / line / parabola for regression.
 - **Step-by-step playback.** Play, pause, single step, reset and speed, with a narrator and a step tracker for the current phase.
-- **Live numbers.** Inertia, merge heights, memberships, core/border/noise counts, and charts such as the elbow and k-distance plots.
+- **Live numbers.** Inertia, merge heights, memberships, core/border/noise counts, accuracies, losses, ε and α, out-of-bag error, and charts such as the elbow, k-distance, split-search and per-fold plots.
 - **Learn tabs.** *Intuition* (analogies), *Math* (numbered equations, pseudocode), *Try this* (one-click challenges that show where the algorithm shines and where it fails).
 
 ### Per algorithm
@@ -84,6 +95,13 @@ It is written for two audiences at once:
 | **Fuzzy C-Means** | Point colors blend by membership; a soft membership field fills the background; fuzziness *m* slider; hover any point for its membership bars. |
 | **DBSCAN** | Visits one point per step with its ε-circle and neighbours; core / border / noise; k-distance plot; ε and minPts update the result live. |
 | **HDBSCAN** | Core distances → mutual reachability → animated minimum spanning tree → condensed tree with stability. Switch between real HDBSCAN and the slides' threshold cut. |
+| **Decision Tree** | Classification (Gini / entropy) and regression (MSE) trees grown one split at a time; decision regions or a step curve; tree diagram (click a node to outline its region); split-search curve; ID3 on the Play Tennis table. |
+| **Random Forest** | Bootstrap samples shown on the canvas (bigger = drawn twice, hollow = out-of-bag), random feature per split, a thumbnail per tree, vote-share regions, out-of-bag error curve. |
+| **Ensemble Learning** | Four views: bias–variance (refit on fresh samples, dartboard, error vs depth), bagging (test accuracy vs one deep tree), gradient boosting with residual sticks, and stacking (tree + logistic + k-NN with an out-of-fold meta-model). |
+| **AdaBoost** | Weighted stumps; points grow with their weight; ε, α and the re-weighting shown per round; thumbnails of each stump; ensemble error curve. |
+| **XGBoost** | Gradients and Hessians per point (size = \|g\|), split search with G/H/gain tables, live λ, γ, η and depth sliders, tree diagram with leaf weights w*. Logistic loss for classes, squared error for regression. |
+| **CatBoost** | Ordered target encoding step by step (customers in lanes, lines to the earlier rows it uses) vs. the leaky version; boosting with oblivious (symmetric) trees whose questions cut the whole plane. |
+| **Cross-Validation** | Holdout, K-fold, LOOCV and stratified folds on k-NN or a tree; fold rings on the canvas, per-fold scores with mean ± std, fold composition table, and a 40× repeated-holdout histogram. |
 
 ### Keyboard shortcuts
 
@@ -109,8 +127,22 @@ The maths lives in pure `algo.js` files and was checked in Node against the slid
 | Fuzzy C-Means, 2D three points | c₁ ≈ (1.93, 2.35), c₂ ≈ (4.34, 3.50), u₁₁ ≈ 0.93. |
 | DBSCAN, A–J, ε = 1.5, minPts = 3 | Two clusters, H is a border point, I and J are noise. |
 | HDBSCAN, A–F, k = 2 | Core distances 1.41, 1, 1.41, 7.07, 7.21, 74.95; MST A–B, B–C, C–D, D–E, D–F; cut at ε = 7 → (A, B, C). |
+| Decision tree, 6 houses, MSE | Best split size < 1600, weighted MSE 541.7 < 600 → leaves 180 / 275. |
+| ID3, Play Tennis | Gains: Outlook 0.247, Temperature 0.029, Humidity 0.152, Wind 0.048; Sunny → Humidity, Rain → Wind. |
+| Random forest, 5 houses, 3 bootstraps | Regression: both 1280 and 1460 → 214.44. Classification: 1280 → Yes, 460 → No. |
+| Ensemble learning | Bagging subsets [3, 7, 7, 1, 12], [5, 5, 10, 3, 9], [8, 2, 2, 12, 6] → Good; boosting A–F; stacking → Good. |
+| AdaBoost, hours 2, 4, 6, 8 | α = 0.549, 0.805, 1.099; weights [.167, .167, .5, .167] → [.10, .50, .30, .10]; new sample 0.255 → +1. |
+| XGBoost, x = 2, 3, 7, 8 | g = ±0.5, h = 0.25; split x < 5 with gain 0.667; w = ±0.667; p = 0.661 / 0.339. |
+| CatBoost, 5 customers | CTRs [0.60, 0.60, 0.30, 0.80, 0.60]; Age < 28 → 0.40 / −0.267; predictions 0.80 / 0.4667. |
+| Cross-validation | 15 points K = 3 (1–5, 6–10, 11–15); LOOCV on A–E; stratified 9 : 3 → 3 : 1 in every fold. |
 
-Where a slide step is inconsistent, the card shows the correct value with a short 📌 note (for example, the final centroid in the hierarchical example, and one mutual-reachability value in the HDBSCAN example).
+Where a slide step is inconsistent, the card shows the correct value with a short 📌 note. Examples:
+
+- the final centroid in the hierarchical example, and one mutual-reachability value in HDBSCAN;
+- four of the candidate rows in the decision-tree MSE table (the winning split is unchanged);
+- random forest: tree 1's right mean (380, not 350), tree 3's best split (1575, not 1400), the resulting averages, and the classification vote for size 460;
+- AdaBoost: “Sample 2” in step 5 should be sample 3, and learner 3's predictions can't come from a single stump;
+- CatBoost: the final prediction adds both leaves, and applies a sigmoid to a probability.
 
 ## Design
 
@@ -161,6 +193,13 @@ ML-Playground/
 │   │   └── points3d.js        # shaded round points, palette, figure box
 │   ├── core/                  # shared by every playground
 │   │   ├── pointlab.js        # scaffold: tools, datasets, lecture mode, narrator, playback
+│   │   ├── suplab.js          # supervised scaffold: task switch, class picker, decision field, curves
+│   │   ├── trees.js           # CART engine (classification, regression, XGBoost gradients), bootstrap
+│   │   ├── models.js          # logistic regression and k-NN (stacking, cross-validation)
+│   │   ├── field.js           # decision-region texture painted from any model
+│   │   ├── treeview.js        # tree diagram
+│   │   ├── thumbs.js          # per-model thumbnails (forests, boosting rounds)
+│   │   ├── supdata.js         # labelled classification and regression datasets
 │   │   ├── lab.js             # page layout: § title, abstract, figure + caption
 │   │   ├── stage.js           # orthographic 2D three.js stage
 │   │   ├── layers.js          # points, stars, region shader, circles, segments, trails
@@ -179,7 +218,14 @@ ML-Playground/
 │       ├── hierarchical/
 │       ├── fcm/
 │       ├── dbscan/
-│       └── hdbscan/
+│       ├── hdbscan/
+│       ├── decision-tree/     # also id3.js (Play Tennis)
+│       ├── random-forest/
+│       ├── ensemble/
+│       ├── adaboost/
+│       ├── xgboost/
+│       ├── catboost/
+│       └── cross-validation/
 ├── Dockerfile                 # node build → nginx serve (multi-arch)
 ├── nginx.conf                 # caching, gzip, headers, /healthz
 ├── .github/workflows/build.yml
@@ -191,22 +237,22 @@ No UI framework: plain ES modules, three.js for graphics, KaTeX for equations. E
 ## Adding an algorithm
 
 1. Create `src/algorithms/<id>/<id>.js` exporting `mount(root)`, which returns an `unmount()` function.
-2. For point-based algorithms, start from `createPointLab()`. It gives you the layout, drawing tools, datasets, lecture mode, narrator and playback; you fill in `L.hooks` (`reset`, `step`, `frame`, `labels`, …).
+2. For point-based algorithms, start from `createPointLab()`. It gives you the layout, drawing tools, datasets, lecture mode, narrator and playback; you fill in `L.hooks` (`reset`, `step`, `frame`, `labels`, …). For supervised models use `createSupLab()` instead: it adds the classification/regression switch, the class picker, `L.showField(probs)` for decision regions and `L.setCurves([...])` for 1D models.
 3. Put the maths in a pure `algo.js` so it can be checked in Node against the slide numbers.
-4. Register it in `src/algorithms/index.js` (remove `soon: true` and add `load`):
+4. Register it in `src/algorithms/index.js`:
 
 ```js
 {
-  id: 'decision-tree', section: 'trees',
-  title: 'Decision Tree',
-  category: 'Supervised · Trees', level: 'Beginner',
-  tagline: 'Ask yes/no questions that split the data, picked by entropy or MSE.',
-  accent: '#6B8E5A',
-  load: () => import('./decision-tree/decision-tree.js'),
+  id: 'svm', section: 'evaluation',
+  title: 'Support Vector Machine',
+  category: 'Supervised · Margins', level: 'Intermediate',
+  tagline: 'Find the widest street between two classes.',
+  accent: '#4F6D8A',
+  load: () => import('./svm/svm.js'),
 },
 ```
 
-The home card, its § number and the `#/decision-tree` route appear automatically. Add a 3D preview for the card in `src/three/cardart.js` if you like.
+The home card, its § number and the `#/svm` route appear automatically (add `soon: true` without `load` to show an “In preparation” card instead). Add a 3D preview for the card in `src/three/cardart.js` if you like.
 
 ## Deployment
 
@@ -232,9 +278,10 @@ docker run -d -p 8080:80 --restart unless-stopped ml-playground   # http://local
 ## Roadmap
 
 - [x] §1 Clustering: K-Means, Hierarchical, Fuzzy C-Means, DBSCAN, HDBSCAN
-- [ ] §2 Trees & Ensembles: Decision Tree, Random Forest, Ensemble Learning
-- [ ] §3 Boosting: AdaBoost, XGBoost, CatBoost
-- [ ] §4 Model Evaluation: Cross-Validation
+- [x] §2 Trees & Ensembles: Decision Tree, Random Forest, Ensemble Learning
+- [x] §3 Boosting: AdaBoost, XGBoost, CatBoost
+- [x] §4 Model Evaluation: Cross-Validation
+- [ ] More to come as the course continues
 
 ## Author
 
