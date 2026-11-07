@@ -85,7 +85,7 @@ export function createSupLab(root, cfg) {
   };
 
   /* ---------- dataset / lecture integration ---------- */
-  const userOnDataset = () => L.hooks.onDatasetSup?.();
+  const userOnDataset = (ds) => L.hooks.onDatasetSup?.(ds);
   L.hooks.onDataset = (ds) => {
     if (ds.task) { L.task = ds.task; taskSeg?.set(ds.task); filterChips(); }
     L.nClasses = ds.nClasses || Math.max(2, ...L.points.map((p) => p.label + 1));

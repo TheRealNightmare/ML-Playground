@@ -584,3 +584,6 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible) { outline: none; }
 .tree-text { font: 500 12px/1.55 'JetBrains Mono Variable', monospace; color: var(--ink, #4A3F35); background: #E6DED1; border-radius: 12px; padding: 10px 12px; margin: 6px 0; white-space: pre; overflow-x: auto; box-shadow: inset 3px 3px 6px #C9BCA8, inset -3px -3px 6px #FFFDF8; }
 .wt tr.dimrow td { opacity: 0.38; }
 .w-note.pin { border-left-color: var(--terracotta, #E07A5F); }
+.dartboard { width: 100%; height: auto; display: block; margin: 8px 0 2px; }
+.btn-row { display: flex; gap: 8px; }
+.btn-row .btn { flex: 1; }
