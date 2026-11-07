@@ -71,14 +71,16 @@ export class AxesOverlay {
     const v = stage.view;
     const a = space.d({ x: -v.halfW, y: -v.halfH });
     const b = space.d({ x: v.halfW, y: v.halfH });
-    const step = niceStep(Math.min(b.x - a.x, b.y - a.y));
-    const key = [v.w, v.h, space.s, space.cx, space.cy, step].join('|');
+    const uniform = Math.abs(space.sx - space.sy) < 1e-9 * Math.max(space.sx, 1);
+    const stepX = uniform ? niceStep(Math.min(b.x - a.x, b.y - a.y)) : niceStep(b.x - a.x);
+    const stepY = uniform ? stepX : niceStep(b.y - a.y, 6);
+    const key = [v.w, v.h, space.sx, space.sy, space.cx, space.cy, stepX, stepY].join('|');
     if (key === this.key) return;
     this.key = key;
-    this.regions?.setGrid(space.wl(step), space.w({ x: 0, y: 0 }));
+    this.regions?.setGrid({ x: stepX / space.sx, y: stepY / space.sy }, space.w({ x: 0, y: 0 }));
     const frag = document.createDocumentFragment();
     const fmt = (n) => (Math.abs(n) < 1e-9 ? '0' : +n.toFixed(6) + '');
-    for (let x = Math.ceil(a.x / step) * step; x <= b.x; x += step) {
+    for (let x = Math.ceil(a.x / stepX) * stepX; x <= b.x; x += stepX) {
       const s = toScreen(stage, space.w({ x, y: 0 }));
       if (s.x < 24 || s.x > v.w - 12) continue;
       const t = document.createElement('span');
@@ -87,7 +89,7 @@ export class AxesOverlay {
       t.style.left = s.x + 'px';
       frag.append(t);
     }
-    for (let y = Math.ceil(a.y / step) * step; y <= b.y; y += step) {
+    for (let y = Math.ceil(a.y / stepY) * stepY; y <= b.y; y += stepY) {
       const s = toScreen(stage, space.w({ x: 0, y }));
       if (s.y < 10 || s.y > v.h - 20) continue;
       const t = document.createElement('span');

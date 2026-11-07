@@ -7,21 +7,28 @@ export class Space {
   constructor() { this.setIdentity(); }
 
   setIdentity() {
-    this.s = 1; this.cx = 0; this.cy = 0;
+    this.s = 1; this.sx = 1; this.sy = 1; this.cx = 0; this.cy = 0;
     this.identity = true;
     return this;
   }
 
   /** Fit the given data points inside the box [-box, box]² (uniform scale). */
-  fit(points, { box = 0.8, minSpan = 1 } = {}) {
+  fit(points, { box = 0.8, minSpan = 1, uniform = true, boxY = box, pad = null } = {}) {
     if (!points.length) return this.setIdentity();
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     for (const p of points) {
       x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x);
       y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
     }
-    const span = Math.max(x1 - x0, y1 - y0, minSpan);
-    this.s = span / (2 * box);
+    if (pad) { x0 -= pad.x ?? 0; x1 += pad.x ?? 0; y0 -= pad.y ?? 0; y1 += pad.y ?? 0; }
+    if (uniform) {
+      const span = Math.max(x1 - x0, y1 - y0, minSpan);
+      this.s = this.sx = this.sy = span / (2 * box);
+    } else {
+      this.sx = Math.max(x1 - x0, minSpan) / (2 * box);
+      this.sy = Math.max(y1 - y0, minSpan) / (2 * boxY);
+      this.s = this.sx;
+    }
     this.cx = (x0 + x1) / 2;
     this.cy = (y0 + y1) / 2;
     this.identity = false;
@@ -29,9 +36,9 @@ export class Space {
   }
 
   /** data → world */
-  w(p) { return { x: (p.x - this.cx) / this.s, y: (p.y - this.cy) / this.s }; }
+  w(p) { return { x: (p.x - this.cx) / this.sx, y: (p.y - this.cy) / this.sy }; }
   /** world → data */
-  d(w) { return { x: w.x * this.s + this.cx, y: w.y * this.s + this.cy }; }
+  d(w) { return { x: w.x * this.sx + this.cx, y: w.y * this.sy + this.cy }; }
   /** a length in data units → world units */
   wl(len) { return len / this.s; }
   /** a length in world units → data units */

@@ -81,8 +81,8 @@ export function createPointLab(root, cfg) {
   player.el.append(h('span', { class: 'kbd-hint' }, h('span', { class: 'kbd' }, 'Space'), 'play ', h('span', { class: 'kbd' }, '→'), 'step ', h('span', { class: 'kbd' }, 'R'), 'reset'));
 
   /* ---------- points ---------- */
-  L.newPoint = (x, y, name = null, wait = 0) => ({
-    x, y, name,
+  L.newPoint = (x, y, name = null, wait = 0, label = 0) => ({
+    x, y, name, label,
     col: GREY.clone(), tc: GREY, oc: null, fr: 0.74,
     s: 0, ts: 1, sz: 1, wait,
     wx: 0, wy: 0, far: false,
@@ -112,7 +112,11 @@ export function createPointLab(root, cfg) {
   function markChip(id) { chipEls.forEach((b) => b.classList.toggle('active', b.dataset.id === id)); }
 
   L.setPoints = (xy, { stagger = true } = {}) => {
-    L.points = xy.slice(0, maxPoints).map((p, i) => L.newPoint(p.x, p.y, p.name || null, stagger ? Math.min(0.45, (i / Math.max(xy.length, 1)) * 0.45) : 0));
+    L.points = xy.slice(0, maxPoints).map((p, i) => {
+      const q = L.newPoint(p.x, p.y, p.name || null, stagger ? Math.min(0.45, (i / Math.max(xy.length, 1)) * 0.45) : 0, p.label ?? 0);
+      if (p.extra) Object.assign(q, p.extra);
+      return q;
+    });
   };
 
   L.loadDataset = (id) => {
@@ -136,7 +140,7 @@ export function createPointLab(root, cfg) {
     L.datasetId = lec.id;
     L.setPoints((lec.points || []).map((p) => ({ ...p })));
     const fitPts = lec.fit ? L.points.filter((p) => lec.fit.includes(p.name)) : L.points;
-    space.fit(fitPts, { box: lec.box ?? 0.72, minSpan: lec.minSpan ?? 1 });
+    space.fit(fitPts, { box: lec.box ?? 0.72, minSpan: lec.minSpan ?? 1, ...(lec.fitOpts || {}) });
     axes.setVisible(true);
     axes.key = '';
     markChip(lec.id);
@@ -146,7 +150,9 @@ export function createPointLab(root, cfg) {
     L.refreshEmpty();
   };
 
-  L.refreshEmpty = () => { emptyEl.style.opacity = L.points.length ? 0 : 1; };
+  L.refreshEmpty = () => { emptyEl.style.opacity = L.points.length || L.hideEmpty ? 0 : 1; };
+  L.markChip = markChip;
+  L.datasetNote = datasetNote;
 
   /* ---------- pointer interaction ---------- */
   const canvas = stage.canvas;
@@ -161,7 +167,8 @@ export function createPointLab(root, cfg) {
   const addPointAt = (w) => {
     if (L.points.length >= maxPoints) { toast(`That’s the max (${maxPoints} points)`); return -1; }
     const d = space.d(w);
-    const p = L.newPoint(d.x, d.y, L.lecture ? nextName() : null);
+    const p = L.newPoint(d.x, d.y, L.lecture ? nextName() : null, 0, L.drawClass ?? 0);
+    L.hooks.placeNew?.(p);
     L.points.push(p);
     return L.points.length - 1;
   };
@@ -234,6 +241,7 @@ export function createPointLab(root, cfg) {
       const q = stage.clamp({ x: w.x + drag.ox, y: w.y + drag.oy });
       const d = space.d(q);
       drag.p.x = d.x; drag.p.y = d.y;
+      L.hooks.constrain?.(drag.p);
       edited('move');
     } else if (drag.type === 'erase') {
       if (eraseAt(wc)) edited('erase');
@@ -360,9 +368,9 @@ export function createPointLab(root, cfg) {
       L.lecture = null;
       space.setIdentity();
       axes.setVisible(false);
-      L.datasetId = 'blank';
-      markChip('blank');
-      datasetNote.textContent = LIB.blank.note;
+      L.datasetId = cfg.blankId?.() || 'blank';
+      markChip(L.datasetId);
+      datasetNote.textContent = cfg.blankNote || LIB.blank.note;
       L.hooks.reset?.();
       L.refreshEmpty();
     }, { variant: 'btn-ghost btn-block' }),

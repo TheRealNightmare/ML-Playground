@@ -28,7 +28,7 @@ export class RegionBackground {
       uMetric: { value: 0 }, // 0 = Euclidean, 1 = Manhattan
       uFuzzy: { value: 0 }, // 0 = hard regions, 1 = Fuzzy C-Means membership field
       uM: { value: 2 }, // fuzziness for the fuzzy field
-      uGrid: { value: 0.1 }, // dot-grid spacing (world)
+      uGrid: { value: new THREE.Vector2(0.1, 0.1) }, // grid spacing (world, x and y)
       uOrigin: { value: new THREE.Vector2(0, 0) }, // where the axes cross (world)
     };
     const mat = new THREE.ShaderMaterial({
@@ -50,7 +50,8 @@ export class RegionBackground {
         uniform float uPx;
         uniform float uDomain;
         uniform int uMetric;
-        uniform float uFuzzy, uM, uGrid;
+        uniform float uFuzzy, uM;
+        uniform vec2 uGrid;
         uniform vec2 uOrigin;
         varying vec2 vW;
         float dist(vec2 a, vec2 b) {
@@ -139,7 +140,9 @@ export class RegionBackground {
   setMetric(m) { this.uniforms.uMetric.value = m === 'manhattan' ? 1 : 0; }
   setFuzzy(on, m = 2) { this.uniforms.uFuzzy.value = on ? 1 : 0; this.uniforms.uM.value = m; }
   setGrid(spacing, origin) {
-    this.uniforms.uGrid.value = Math.max(spacing, 1e-4);
+    const sx = typeof spacing === 'number' ? spacing : spacing.x;
+    const sy = typeof spacing === 'number' ? spacing : spacing.y;
+    this.uniforms.uGrid.value.set(Math.max(sx, 1e-4), Math.max(sy, 1e-4));
     this.uniforms.uOrigin.value.set(origin.x, origin.y);
   }
 

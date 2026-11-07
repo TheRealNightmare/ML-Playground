@@ -50,7 +50,7 @@ export const ALGORITHMS = [
     accent: '#4F6D8A',
     load: () => import('./hdbscan/hdbscan.js'),
   },
-  { id: 'decision-tree', section: 'trees', soon: true, title: 'Decision Tree', emoji: '', category: 'Supervised · Trees', level: 'Beginner', tagline: 'Ask yes/no questions that split the data, picked by entropy or MSE.', accent: '#6B8E5A' },
+  { id: 'decision-tree', section: 'trees', load: () => import('./decision-tree/decision-tree.js'), title: 'Decision Tree', emoji: '', category: 'Supervised · Trees', level: 'Beginner', tagline: 'Ask yes/no questions that split the data, picked by entropy or MSE.', accent: '#6B8E5A' },
   { id: 'random-forest', section: 'trees', soon: true, title: 'Random Forest', emoji: '', category: 'Supervised · Ensemble', level: 'Intermediate', tagline: 'Many trees on bootstrap samples, voting together.', accent: '#4F6D8A' },
   { id: 'ensemble', section: 'trees', soon: true, title: 'Ensemble Learning', emoji: '', category: 'Concepts · Bias & variance', level: 'Beginner', tagline: 'Bagging vs boosting vs stacking, and the bias–variance dartboard.', accent: '#C46A8A' },
   { id: 'adaboost', section: 'boosting', soon: true, title: 'AdaBoost', emoji: '', category: 'Supervised · Boosting', level: 'Intermediate', tagline: 'Re-weight the mistakes so the next stump focuses on them.', accent: '#D4A24C' },
