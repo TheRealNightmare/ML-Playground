@@ -56,7 +56,7 @@ export const ALGORITHMS = [
   { id: 'adaboost', section: 'boosting', load: () => import('./adaboost/adaboost.js'), title: 'AdaBoost', emoji: '', category: 'Supervised · Boosting', level: 'Intermediate', tagline: 'Re-weight the mistakes so the next stump focuses on them.', accent: '#D4A24C' },
   { id: 'xgboost', section: 'boosting', load: () => import('./xgboost/xgboost.js'), title: 'XGBoost', emoji: '', category: 'Supervised · Boosting', level: 'Advanced', tagline: 'Gradients, Hessians and gain — boosting with second-order math.', accent: '#E07A5F' },
   { id: 'catboost', section: 'boosting', load: () => import('./catboost/catboost.js'), title: 'CatBoost', emoji: '', category: 'Supervised · Boosting', level: 'Advanced', tagline: 'Ordered target encoding for categories, then gradient boosting.', accent: '#8A5A83' },
-  { id: 'cross-validation', section: 'evaluation', soon: true, title: 'Cross-Validation', emoji: '', category: 'Concepts · Evaluation', level: 'Beginner', tagline: 'Holdout, K-fold, LOOCV and stratified folds, animated.', accent: '#3D8B8B' },
+  { id: 'cross-validation', section: 'evaluation', load: () => import('./cross-validation/cross-validation.js'), title: 'Cross-Validation', emoji: '', category: 'Concepts · Evaluation', level: 'Beginner', tagline: 'Holdout, K-fold, LOOCV and stratified folds, animated.', accent: '#3D8B8B' },
 ];
 
 export const findAlgorithm = (id) => ALGORITHMS.find((a) => a.id === id && !a.soon);
