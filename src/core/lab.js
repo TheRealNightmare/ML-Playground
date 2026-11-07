@@ -15,7 +15,7 @@ export function sectionNumber(title) {
  *   title block (section number, title, abstract), then
  *   [ controls ] [ figure: narrator + canvas + playbar + caption ] [ numbers + learn ]
  */
-export function createLab(root, { title, category, level, blurb, accent = '#2563EB' }) {
+export function createLab(root, { title, category, level, blurb, accent = '#3D8B8B' }) {
   const controls = h('aside', { class: 'lab-controls card', 'aria-label': 'Controls' });
   const stageHolder = h('div', { class: 'stage-holder' });
   const overlay = h('div', { class: 'stage-overlay' });

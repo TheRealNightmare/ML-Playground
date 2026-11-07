@@ -1,8 +1,8 @@
 // A small, dependency-free canvas chart for live metrics (line or bars).
 
-const INK = '#111827';
-const MUTED = '#6B7280';
-const GRID = '#E5E7EB';
+const INK = '#3A3029';
+const MUTED = '#8A7C6E';
+const GRID = '#DDD3C4';
 
 function niceNum(v) {
   if (!isFinite(v) || v === 0) return '0';
@@ -115,7 +115,7 @@ export class MiniChart {
       ctx.beginPath();
       this.data.forEach((d, i) => (i ? ctx.lineTo(xOf(i), yOf(d.y)) : ctx.moveTo(xOf(i), yOf(d.y))));
       ctx.lineTo(xOf(n - 1), yOf(0)); ctx.lineTo(xOf(0), yOf(0)); ctx.closePath();
-      ctx.fillStyle = 'rgba(37,99,235,0.08)';
+      ctx.fillStyle = 'rgba(61,139,139,0.10)';
       if (!this.noArea) ctx.fill();
       // line
       ctx.beginPath();
@@ -145,7 +145,7 @@ export class MiniChart {
         ctx.beginPath();
         const rr = Math.min(6, bw / 2);
         ctx.roundRect ? ctx.roundRect(x, y, bw, Math.max(bh, 1), [rr, rr, 0, 0]) : ctx.rect(x, y, bw, bh);
-        ctx.fillStyle = b.color || '#E5E7EB';
+        ctx.fillStyle = b.color || '#DDD3C4';
         ctx.fill();
         ctx.lineWidth = b.highlight ? 2.5 : 1.5;
         ctx.strokeStyle = INK;
@@ -159,9 +159,9 @@ export class MiniChart {
     }
     if (this.ref && this.mode === 'line' || this.ref && this.mode === 'bars') {
       const y = yOf(this.ref.y);
-      ctx.setLineDash([5, 4]); ctx.strokeStyle = this.ref.color || '#F97316'; ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = this.ref.color || '#E07A5F'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = this.ref.color || '#F97316'; ctx.font = '800 11px JetBrains Mono Variable, monospace';
+      ctx.fillStyle = this.ref.color || '#E07A5F'; ctx.font = '800 11px JetBrains Mono Variable, monospace';
       ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
       ctx.fillText(this.ref.label || '', pad.l + 4, y - 3);
       ctx.font = '600 11px JetBrains Mono Variable, monospace'; ctx.textBaseline = 'alphabetic';

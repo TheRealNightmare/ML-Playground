@@ -20,7 +20,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { accent: '#7C3AED', title: 'Fuzzy C-Means', emoji: '', category: 'Unsupervised · Soft clustering', level: 'Intermediate', blurb: 'Every point belongs to every cluster a little — watch memberships and colors blend.' },
+    meta: { accent: '#8A5A83', title: 'Fuzzy C-Means', emoji: '', category: 'Unsupervised · Soft clustering', level: 'Intermediate', blurb: 'Every point belongs to every cluster a little — watch memberships and colors blend.' },
     datasets: ['overlap', 'blobs', 'uneven', 'moons', 'uniform', 'blank'],
     defaultDataset: 'overlap',
     n: { min: 20, max: 600, step: 20, value: 180 },
@@ -203,8 +203,8 @@ export function mount(root) {
   const stats = statTiles([['iter', 'Round'], ['J', 'J_m'], ['delta', 'Max Δu']]);
   const chart = new MiniChart({ height: 130, xLabel: 'step', empty: 'Press Step to start' });
   const legend = h('div', { class: 'chart-legend' },
-    h('span', {}, h('i', { style: { background: '#CA8A04' } }), 'after centroids'),
-    h('span', {}, h('i', { style: { background: '#7C3AED' } }), 'after memberships'));
+    h('span', {}, h('i', { style: { background: '#D4A24C' } }), 'after centroids'),
+    h('span', {}, h('i', { style: { background: '#8A5A83' } }), 'after memberships'));
   const inspectTitle = h('div', { class: 'sub-label' }, 'Memberships');
   const inspectBars = h('div', { class: 'member-bars' });
   const numbers = h('div', { class: 'card side-card' },
@@ -308,7 +308,7 @@ export function mount(root) {
     stats.set('iter', S.iter);
     stats.set('J', S.cents.length ? fmt(F.objective(L.points, S.U, S.cents, S.m), 2) : '–');
     stats.set('delta', S.lastDelta == null ? '–' : fmt(S.lastDelta, 3));
-    chart.setLine(S.history.map((d) => ({ y: d.J, color: d.kind === 'cent' ? '#CA8A04' : '#7C3AED' })), { xLabel: 'step' });
+    chart.setLine(S.history.map((d) => ({ y: d.J, color: d.kind === 'cent' ? '#D4A24C' : '#8A5A83' })), { xLabel: 'step' });
     renderInspect();
     renderWorked();
   }

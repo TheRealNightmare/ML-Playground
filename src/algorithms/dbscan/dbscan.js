@@ -6,7 +6,7 @@ import { table, note, para, step, fmt, fx } from '../../core/worked.js';
 import * as D from './algo.js';
 import { LECTURES, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const NOISE_RING = new THREE.Color(0x9ca3af);
+const NOISE_RING = new THREE.Color(0xada092);
 const name = (L, i) => L.points[i]?.name || `#${i + 1}`;
 
 export function mount(root) {
@@ -18,7 +18,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { accent: '#2563EB', title: 'DBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Intermediate', blurb: 'Grow clusters from crowded areas, one point at a time, and leave the loners as noise.' },
+    meta: { accent: '#3D8B8B', title: 'DBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Intermediate', blurb: 'Grow clusters from crowded areas, one point at a time, and leave the loners as noise.' },
     datasets: ['noisymoons', 'noisy', 'rings', 'density', 'smiley', 'blank'],
     defaultDataset: 'noisymoons',
     n: { min: 20, max: 700, step: 20, value: 260 },
@@ -117,10 +117,10 @@ export function mount(root) {
   const kchart = new MiniChart({ height: 130, xLabel: 'points sorted by k-distance', empty: 'Add points' });
   const kNote = h('div', { class: 'chart-note' });
   const legend = h('div', { class: 'legend-row' },
-    h('span', {}, h('i', { style: { background: '#2563EB' } }), 'core'),
-    h('span', {}, h('i', { class: 'small', style: { background: '#2563EB' } }), 'border'),
+    h('span', {}, h('i', { style: { background: '#3D8B8B' } }), 'core'),
+    h('span', {}, h('i', { class: 'small', style: { background: '#3D8B8B' } }), 'border'),
     h('span', {}, h('i', { class: 'ring' }), 'noise'),
-    h('span', {}, h('i', { style: { background: '#9CA3AF' } }), 'not visited'));
+    h('span', {}, h('i', { style: { background: '#ADA092' } }), 'not visited'));
   const numbers = h('div', { class: 'card side-card' },
     h('h3', {}, 'Live numbers'), stats.el, legend,
     h('div', { class: 'sub-label' }, 'k-distance plot (pick ε at the knee)'), kchart.canvas, kNote);

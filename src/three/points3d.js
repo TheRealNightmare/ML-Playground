@@ -20,7 +20,7 @@ export function makePoints(n, { size = 9, outline = 0.18, opacity = 1 } = {}) {
       uScale: { value: 300 },
       uOutline: { value: outline },
       uOpacity: { value: opacity },
-      uInk: { value: new THREE.Color(0x1f2937) },
+      uInk: { value: new THREE.Color(0x4a3f35) },
     },
     vertexShader: /* glsl */ `
       attribute vec3 color;
@@ -72,20 +72,20 @@ export function makePoints(n, { size = 9, outline = 0.18, opacity = 1 } = {}) {
 export function rng(seed = 1) { let s = seed >>> 0 || 1; return () => ((s = (s * 16807) % 2147483647) / 2147483647); }
 export function gauss(r) { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
 
-export const CAT = [0x2563eb, 0xf97316, 0x0d9488, 0xdc2626, 0x7c3aed, 0xca8a04, 0xdb2777, 0x0891b2].map((c) => new THREE.Color(c));
-export const GREYC = new THREE.Color(0xb4bac4);
-export const INKC = new THREE.Color(0x1f2937);
+export const CAT = [0xe07a5f, 0x3d8b8b, 0xd4a24c, 0x6b8e5a, 0x8a5a83, 0x4f6d8a, 0xb5523b, 0x8c8a3e].map((c) => new THREE.Color(c));
+export const GREYC = new THREE.Color(0xb8ac9c);
+export const INKC = new THREE.Color(0x4a3f35);
 
 /** A light "figure box": wireframe cube + floor grid, like a 3D plot in a paper. */
 export function figureBox(size = 2.2, { grid = true, opacity = 0.55 } = {}) {
   const g = new THREE.Group();
   const box = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.BoxGeometry(size, size, size)),
-    new THREE.LineBasicMaterial({ color: 0xd1d5db, transparent: true, opacity }),
+    new THREE.LineBasicMaterial({ color: 0xb3a590, transparent: true, opacity }),
   );
   g.add(box);
   if (grid) {
-    const gh = new THREE.GridHelper(size, 8, 0xe5e7eb, 0xe5e7eb);
+    const gh = new THREE.GridHelper(size, 8, 0xcdbfa9, 0xcdbfa9);
     gh.position.y = -size / 2;
     gh.material.transparent = true;
     gh.material.opacity = opacity;

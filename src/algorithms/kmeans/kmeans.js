@@ -26,7 +26,7 @@ const INIT_INFO = {
 
 export function mount(root) {
   const lab = createLab(root, {
-    accent: '#CA8A04',
+    accent: '#D4A24C',
     title: 'K-Means Clustering',
     emoji: '',
     category: 'Unsupervised · Clustering',
@@ -602,12 +602,12 @@ export function mount(root) {
   function updateChart() {
     if (S.chartMode === 'inertia') {
       chart.setLine(
-        S.history.map((d) => ({ y: d.J, color: d.kind === 'assign' ? '#2563EB' : '#F97316' })),
+        S.history.map((d) => ({ y: d.J, color: d.kind === 'assign' ? '#3D8B8B' : '#E07A5F' })),
         { xLabel: 'step', empty: S.points.length ? 'Press Step to see inertia drop' : 'Add points first' },
       );
       chartLegend.replaceChildren(
-        h('span', {}, h('i', { style: { background: '#2563EB' } }), 'after Assign'),
-        h('span', {}, h('i', { style: { background: '#F97316' } }), 'after Update'),
+        h('span', {}, h('i', { style: { background: '#3D8B8B' } }), 'after Assign'),
+        h('span', {}, h('i', { style: { background: '#E07A5F' } }), 'after Update'),
       );
       chartNote.innerHTML = S.history.length > 1
         ? 'Notice it <b>never goes up</b> — both steps can only make the groups tighter.'
@@ -621,10 +621,10 @@ export function mount(root) {
       }
       chart.setBars(elbowData.map((v, i) => ({
         label: String(i + 1), value: v,
-        color: i + 1 === S.K ? '#CA8A04' : '#E5E7EB',
+        color: i + 1 === S.K ? '#D4A24C' : '#DDD3C4',
         highlight: i + 1 === S.K,
       })), { xLabel: 'K (number of clusters) — click a bar to use it' });
-      chartLegend.replaceChildren(h('span', {}, h('i', { style: { background: '#CA8A04' } }), `your K = ${S.K}`));
+      chartLegend.replaceChildren(h('span', {}, h('i', { style: { background: '#D4A24C' } }), `your K = ${S.K}`));
       chartNote.innerHTML = 'Best inertia found for each K. Find the <b>elbow</b>: the K after which bars stop shrinking much.';
     }
   }

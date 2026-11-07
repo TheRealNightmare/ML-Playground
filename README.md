@@ -1,114 +1,132 @@
 <div align="center">
 
-# 🎈 ML Playground
+# ML Playground
 
-**Watch machine learning think.**
+### *Interactive notes on machine learning*
 
-Interactive, animated simulations of machine learning algorithms, built with three.js.
-Draw your own data, press play, and follow every step with plain-English notes and the real math beside it.
+Every algorithm is an interactive figure. Draw your own data, step through the algorithm one move at a time, and read what happened: in plain language, with the real equations, and with the exact worked examples from the lecture slides.
 
-[**Live demo → ml.mirazulislamnahid.com**](https://ml.mirazulislamnahid.com)
+[**Live site → ml.mirazulislamnahid.com**](https://ml.mirazulislamnahid.com)
 
-![three.js](https://img.shields.io/badge/three.js-r187-2B2240?logo=threedotjs&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES2020-F7DF1E?logo=javascript&logoColor=black)
-![KaTeX](https://img.shields.io/badge/math-KaTeX-329894)
-![Docker](https://img.shields.io/badge/deploy-Docker%20%2B%20nginx-2496ED?logo=docker&logoColor=white)
+![three.js](https://img.shields.io/badge/three.js-r187-4A3F35?logo=threedotjs&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-4A3F35?logo=vite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/vanilla_JS-ES2020-4A3F35?logo=javascript&logoColor=white)
+![KaTeX](https://img.shields.io/badge/math-KaTeX-4A3F35)
+![Docker](https://img.shields.io/badge/deploy-Docker_·_Dokploy-4A3F35?logo=docker&logoColor=white)
+[![Build check](https://github.com/TheRealNightmare/ML-Playground/actions/workflows/build.yml/badge.svg)](https://github.com/TheRealNightmare/ML-Playground/actions/workflows/build.yml)
 
-<img src="docs/kmeans-preview.png" alt="K-Means playground mid-run: colored clusters, star centroids, shaded regions and live inertia chart" width="900" />
+<img src="docs/home.png" alt="Home page: a 3D point cloud clustering itself with K-Means, in a soft neumorphic warm-sand design" width="900" />
 
 </div>
 
 ---
 
-## ✨ Why this exists
+## Contents
 
-Most explanations of ML algorithms are either a wall of equations or a static GIF. ML Playground sits in between: every algorithm is a small lab you can **poke**. Add points where you want, drag the model's parameters around, slow it down, run it one step at a time, and read what just happened.
+- [Why](#why)
+- [Playgrounds](#playgrounds)
+- [Lecture mode](#lecture-mode)
+- [Design](#design)
+- [Getting started](#getting-started)
+- [Project structure](#project-structure)
+- [Adding an algorithm](#adding-an-algorithm)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+
+---
+
+## Why
+
+Most explanations of ML algorithms are either a wall of equations or a GIF you can't touch. ML Playground sits in between: each algorithm is a small lab you can **poke**. Add points where you want, drag centroids around, slow it down, step through it, and read what just happened.
 
 It is written for two audiences at once:
 
-- **Total beginners** get an analogy-first **Intuition** tab and a narrator that explains each step in plain English.
-- **University students** get a **Math** tab with the objective function, update rules and pseudocode that highlights the line currently running.
+- **Beginners** get an analogy-first *Intuition* tab and a narrator that explains every step in plain English.
+- **University students** get a *Math* tab with numbered equations and pseudocode that highlights the line currently running, plus *Worked example* tables that rebuild the lecture slides step by step.
 
-## 🧪 Playgrounds
+## Playgrounds
 
-| | Playground | Type | Status |
+| § | Playground | Type | Status |
 |---|---|---|---|
-| ⭐ | [K-Means Clustering](https://ml.mirazulislamnahid.com/#/kmeans) | Unsupervised · Clustering | ✅ Live |
-| 🌳 | [Hierarchical Clustering](https://ml.mirazulislamnahid.com/#/hierarchical) | Unsupervised · Clustering | ✅ Live |
-| 🌈 | [Fuzzy C-Means](https://ml.mirazulislamnahid.com/#/fcm) | Unsupervised · Soft clustering | ✅ Live |
-| 🔍 | [DBSCAN](https://ml.mirazulislamnahid.com/#/dbscan) | Unsupervised · Density | ✅ Live |
-| 🏔️ | [HDBSCAN](https://ml.mirazulislamnahid.com/#/hdbscan) | Unsupervised · Density | ✅ Live |
-| 🌲 | Decision Tree · Random Forest · Ensemble Learning | Trees & Ensembles | 🚧 Next |
-| ⚡ | AdaBoost · XGBoost · CatBoost | Boosting | 🚧 Planned |
-| 🔁 | Cross-Validation | Model Evaluation | 🚧 Planned |
+| 1.1 | [K-Means Clustering](https://ml.mirazulislamnahid.com/#/kmeans) | Unsupervised · Clustering | ✅ Live |
+| 1.2 | [Hierarchical Clustering](https://ml.mirazulislamnahid.com/#/hierarchical) | Unsupervised · Clustering | ✅ Live |
+| 1.3 | [Fuzzy C-Means](https://ml.mirazulislamnahid.com/#/fcm) | Unsupervised · Soft clustering | ✅ Live |
+| 1.4 | [DBSCAN](https://ml.mirazulislamnahid.com/#/dbscan) | Unsupervised · Density | ✅ Live |
+| 1.5 | [HDBSCAN](https://ml.mirazulislamnahid.com/#/hdbscan) | Unsupervised · Density | ✅ Live |
+| 2.1–2.3 | Decision Tree · Random Forest · Ensemble Learning | Trees & Ensembles | 🚧 Next |
+| 3.1–3.3 | AdaBoost · XGBoost · CatBoost | Boosting | 🚧 Planned |
+| 4.1 | Cross-Validation | Model Evaluation | 🚧 Planned |
 
-### 📝 Lecture mode
+<table>
+<tr>
+<td width="50%"><img src="docs/kmeans.png" alt="K-Means lecture example with distance tables" /><br><sub><b>K-Means</b> — the 5-point lecture example, mid-run, with the iteration table on the right.</sub></td>
+<td width="50%"><img src="docs/hierarchical.png" alt="Hierarchical clustering with a live dendrogram" /><br><sub><b>Hierarchical</b> — single linkage draws the spanning tree; drag the dashed line to cut the dendrogram.</sub></td>
+</tr>
+<tr>
+<td colspan="2"><img src="docs/dbscan.png" alt="DBSCAN on two moons with noise" /><br><sub><b>DBSCAN</b> — two moons found, noise left hollow, and a k-distance plot to choose ε.</sub></td>
+</tr>
+</table>
 
-Every playground has **“From the lecture”** examples that load the exact worked examples from the course slides — same points, same settings — and a **Worked example** card that rebuilds the slide tables live as you step: distance matrices, centroid formulas, membership tables, ε-neighbourhoods, core distances, spanning-tree edges. Axes switch to the slide’s units so every number matches. Where a slide step is inconsistent, the card shows the correct value with a short 📌 note explaining the difference.
+### What every playground has
 
-### 🌳 Hierarchical Clustering
-- Agglomerative merging with **single, complete, average or centroid** linkage and **Euclidean or Manhattan** distance.
-- Live **dendrogram** that grows with each merge; drag the ✂ cut line (or set K) to choose clusters.
-- Lecture: 5 points with Manhattan + centroid linkage (heights 1, 2, 5.5, 10.75), the A–E distance-table exercise (single link), and the A1–B2 practice question.
+- **Draw your own data.** Click to add points, drag to move them, spray whole clouds, erase. Everything re-runs live.
+- **Presets.** Blobs, moons, rings, uneven groups, noisy data, different densities, overlap, a smiley.
+- **Step-by-step playback.** Play, pause, single step, reset and speed, with a narrator and a step tracker for the current phase.
+- **Live numbers.** Inertia, merge heights, memberships, core/border/noise counts, and charts such as the elbow and k-distance plots.
+- **Learn tabs.** *Intuition* (analogies), *Math* (numbered equations, pseudocode), *Try this* (one-click challenges that show where the algorithm shines and where it fails).
 
-### 🌈 Fuzzy C-Means
-- Soft memberships shown as **blended colors** and a live **membership field** in the background.
-- Fuzziness **m** slider, stopping tolerance ε, hover any point for its membership bars, toggle hard (argmax) labels.
-- Lecture: the 1D example (x = 1, 2, 7, 8) and the 2D three-point example with the given U⁽⁰⁾.
+### Per algorithm
 
-### 🔍 DBSCAN
-- Visits one point per step: ε-circle, neighbour lines, **core / border / noise** classification, cluster expansion queue.
-- **k-distance plot** with the current ε, live re-run when ε or minPts change.
-- Lecture: points A–J with ε = 1.5, minPts = 3 and the highlighted distance table.
+| Playground | Highlights |
+|---|---|
+| **K-Means** | Rippling assignments, centroid footprints, Voronoi regions in a shader, K-Means++ / random / farthest-pair starts, Euclidean or Manhattan distance, elbow chart, bad-start challenge. |
+| **Hierarchical** | Single, complete, average and centroid linkage; Euclidean or Manhattan; a growing dendrogram with a draggable cut line; distance-table exercise from the slides. |
+| **Fuzzy C-Means** | Point colors blend by membership; a soft membership field fills the background; fuzziness *m* slider; hover any point for its membership bars. |
+| **DBSCAN** | Visits one point per step with its ε-circle and neighbours; core / border / noise; k-distance plot; ε and minPts update the result live. |
+| **HDBSCAN** | Core distances → mutual reachability → animated minimum spanning tree → condensed tree with stability. Switch between real HDBSCAN and the slides' threshold cut. |
 
-### 🏔️ HDBSCAN
-- Core distances → mutual reachability → **minimum spanning tree** (animated) → **condensed tree** with stability.
-- Two extraction modes: **Stability** (real HDBSCAN, excess of mass) and **Threshold cut** (the slide method).
-- Lecture: points A–F with k = 2, reproducing the core distances, MST and the ε = 7 cut.
-
-### ⭐ K-Means Clustering
-
-Lecture extras: the 5-point example with the slide’s starting centroids, iteration tables, the new-point (2, 7) question, **Manhattan** distance, and the **farthest-pair** (“modified k-means”) start.
-
-
-**See it work**
-- Points change color in a ripple spreading out from their nearest centroid (the ★).
-- Stars glide to the mean of their cluster and leave dashed footprints behind.
-- A GPU shader shades the area each star owns and draws the exact borders between them, which makes it obvious that K-Means borders are always straight lines.
-- A narrator and a step tracker (Data → Place ★ → Assign ⇄ Update → Done) explain every move.
-
-**Make your own data**
-- ✏️ **Draw**: click to add a point, drag any point to move it.
-- 💨 **Spray**: hold and drag to paint whole clouds of points.
-- 🧽 **Erase**: hold and drag to wipe points away.
-- Drag a ★ at any time and watch every point re-pick its nearest star live.
-- Presets: Blobs, Uneven, Moons, Rings, Smiley, Random and Blank.
-
-**Control the algorithm**
-- K from 1 to 8.
-- Three ways to place the starting stars: **K-Means++**, **random data points** (Forgy), or **anywhere** on the canvas.
-- Play, pause, single-step, reset and a speed slider (0.25× to 4×).
-
-**Measure it**
-- An **inertia** (WCSS) chart that records every assign and update step, so you can see it never goes up.
-- An **elbow chart** for K = 1…8. Click a bar to use that K.
-- A bar showing how many points each cluster holds.
-
-**Learn it**
-- 💡 **Intuition**: the ice-cream-truck analogy, the four steps, strengths and limits.
-- ∑ **Math**: objective, assignment and update rules, why it always converges, K-Means++ probabilities, cost, and the elbow method.
-- 🎯 **Try this**: six one-click challenges, such as a bad start that gets stuck in a local minimum and the Moons dataset where K-Means fails.
-
-### ⌨️ Keyboard shortcuts
+### Keyboard shortcuts
 
 | Key | Action |
 |---|---|
 | `Space` | Play / pause |
 | `→` | One step |
 | `R` | Reset (keeps your points) |
+| `↑ ↑ ↓ ↓ ← → ← → B A` | Appendix A |
 
-## 🚀 Getting started
+## Lecture mode
+
+Each page has **From the lecture** buttons that load the exact worked examples from the course slides (same points, same settings), and a **Worked example** card that rebuilds the slide tables live as you step: distance matrices, centroid formulas, membership tables, ε-neighbourhoods, core distances and spanning-tree edges. The axes switch to the slides' units so every number matches.
+
+The maths lives in pure `algo.js` files and was checked in Node against the slides:
+
+| Example | Matches |
+|---|---|
+| K-Means, 5 points, k = 2 | Converges after 3 iterations to C1 = (3, 5), C2 = (5.5, 7); new point (2, 7) → Cluster 1. |
+| Hierarchical, 5 points, Manhattan + centroid | Merge heights 1, 2, 5.5, 10.75. |
+| Hierarchical, A–E distance table, single link | Merges at 2, 3, 4, 5. |
+| Fuzzy C-Means, 1D x = 1, 2, 7, 8 | c₁ ≈ 2.34, c₂ ≈ 6.44, u₁₁ ≈ 0.94. |
+| Fuzzy C-Means, 2D three points | c₁ ≈ (1.93, 2.35), c₂ ≈ (4.34, 3.50), u₁₁ ≈ 0.93. |
+| DBSCAN, A–J, ε = 1.5, minPts = 3 | Two clusters, H is a border point, I and J are noise. |
+| HDBSCAN, A–F, k = 2 | Core distances 1.41, 1, 1.41, 7.07, 7.21, 74.95; MST A–B, B–C, C–D, D–E, D–F; cut at ε = 7 → (A, B, C). |
+
+Where a slide step is inconsistent, the card shows the correct value with a short 📌 note (for example, the final centroid in the hierarchical example, and one mutual-reachability value in the HDBSCAN example).
+
+## Design
+
+A soft **neumorphic** interface in warm sand, laid out like a research paper.
+
+- **Surfaces** are either raised from the page or pressed into it. Buttons press in when clicked, and the simulation canvas is a pressed-in well.
+- **Colors**: sand base `#EDE6DB` with earthy categorical colors (terracotta, teal, mustard, sage, plum, slate, rust, olive) that stay distinct on the background.
+- **Type**: Source Serif 4 for headings, Inter for text, JetBrains Mono for numbers.
+- **Paper touches**: § section numbers, *Abstract* lines, live **Figure** captions, numbered equations and notes, booktabs-style tables.
+- **3D (three.js)** on the home page only, so lab pages stay focused:
+  - **Figure 1**, a 1,500-point cloud that runs K-Means on itself in a loop (drag to rotate, double-click for new data);
+  - a faint drifting neighbour graph in the background;
+  - a small 3D figure on every card that animates on hover (all drawn by one shared WebGL renderer).
+- Respects *reduce motion*, and pauses 3D when it's off-screen.
+
+## Getting started
 
 Requires **Node.js 18+** (developed on Node 22).
 
@@ -121,102 +139,104 @@ npm run dev        # http://localhost:5173
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Start the dev server with hot reload |
-| `npm run build` | Build the static site into `dist/` |
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Static build into `dist/` |
 | `npm run preview` | Serve the built site locally |
 
-## 🗂️ Project structure
+## Project structure
 
 ```
 ML-Playground/
 ├── index.html
 ├── public/favicon.svg
 ├── src/
-│   ├── main.js              # hash router (#/kmeans), fonts, styles
-│   ├── home.js              # landing page + algorithm cards
-│   ├── styles.css           # the playful theme
-│   ├── core/                # shared by every simulation
-│   │   ├── pointlab.js      # scaffold for 2D point playgrounds: tools, datasets, lecture mode, narrator
-│   │   ├── stage.js         # three.js orthographic 2D stage, pointer → world coords
-│   │   ├── space.js         # slide units ↔ canvas units
-│   │   ├── overlay.js       # point name tags and axes in slide units
-│   │   ├── worked.js        # tables and notes for the worked-example card
-│   │   ├── datasets.js      # shared 2D datasets
-│   │   ├── tex.js           # KaTeX helpers
-│   │   ├── layers.js        # points, stars, region shader (hard/fuzzy, Euclid/Manhattan), circles, segments, trails
-│   │   ├── player.js        # play / pause / step / reset / speed + keyboard shortcuts
-│   │   ├── chart.js         # tiny canvas line & bar chart
-│   │   ├── lab.js           # 3-column lab page layout
-│   │   ├── ui.js            # DOM helpers: slider, segmented, toggle, tabs
-│   │   └── theme.js         # one color palette for CSS and three.js
+│   ├── main.js                # hash router (#/kmeans), header, fonts
+│   ├── home.js                # home page: hero figure, sections, cards
+│   ├── konami.js              # Appendix A
+│   ├── styles.css             # neumorphic warm-sand theme
+│   ├── three/                 # 3D for the home page
+│   │   ├── hero3d.js          # Figure 1: self-clustering 3D point cloud
+│   │   ├── bgfield.js         # faint background neighbour graph
+│   │   ├── cardart.js         # per-card 3D previews (one shared renderer)
+│   │   └── points3d.js        # shaded round points, palette, figure box
+│   ├── core/                  # shared by every playground
+│   │   ├── pointlab.js        # scaffold: tools, datasets, lecture mode, narrator, playback
+│   │   ├── lab.js             # page layout: § title, abstract, figure + caption
+│   │   ├── stage.js           # orthographic 2D three.js stage
+│   │   ├── layers.js          # points, stars, region shader, circles, segments, trails
+│   │   ├── space.js           # slide units ↔ canvas units
+│   │   ├── overlay.js         # point labels and axes in slide units
+│   │   ├── worked.js          # worked-example tables and notes
+│   │   ├── player.js          # play / pause / step / reset / speed
+│   │   ├── chart.js           # small canvas line & bar charts
+│   │   ├── datasets.js        # shared 2D datasets
+│   │   ├── tex.js             # KaTeX helpers
+│   │   ├── ui.js              # sliders, segmented controls, toggles, tabs
+│   │   └── theme.js           # one palette for CSS, canvas and 3D
 │   └── algorithms/
-│       ├── index.js         # registry of all playgrounds
-│       ├── kmeans/          # page, pure algorithm, datasets, learn content
+│       ├── index.js           # registry + sections
+│       ├── kmeans/            # <id>.js page · algo.js pure math · content.js text
 │       ├── hierarchical/
 │       ├── fcm/
 │       ├── dbscan/
-│       └── hdbscan/         # each folder: <id>.js (page) + algo.js (pure math) + content.js
-├── Dockerfile               # Node build → nginx serve
-└── nginx.conf
+│       └── hdbscan/
+├── Dockerfile                 # node build → nginx serve (multi-arch)
+├── nginx.conf                 # caching, gzip, headers, /healthz
+├── .github/workflows/build.yml
+└── DEPLOY.md                  # step-by-step Dokploy + Cloudflare Tunnel guide
 ```
 
-No UI framework: plain ES modules, three.js for the canvas and KaTeX for equations. Each playground is lazy-loaded, so the home page stays small.
+No UI framework: plain ES modules, three.js for graphics, KaTeX for equations. Each playground is lazy-loaded.
 
-## ➕ Adding a new algorithm
+## Adding an algorithm
 
-1. Create `src/algorithms/<id>/<id>.js` and export `mount(root)`, which builds the page and returns an `unmount()` cleanup function. For point-based algorithms, start from `createPointLab()` — it gives you drawing tools, datasets, lecture mode and the layout; you fill in `L.hooks` (`reset`, `step`, `frame`, …). Keep the math in a pure `algo.js` so it can be checked in Node against the slide numbers.
-2. Build it from the shared pieces in `src/core/`:
-   - `createLab()` for the page layout,
-   - `Stage` for the three.js canvas,
-   - `Player` for playback controls,
-   - `MiniChart` for live metrics,
-   - layers such as `PointLayer` and `RegionBackground`.
-3. Register it in `src/algorithms/index.js`:
+1. Create `src/algorithms/<id>/<id>.js` exporting `mount(root)`, which returns an `unmount()` function.
+2. For point-based algorithms, start from `createPointLab()`. It gives you the layout, drawing tools, datasets, lecture mode, narrator and playback; you fill in `L.hooks` (`reset`, `step`, `frame`, `labels`, …).
+3. Put the maths in a pure `algo.js` so it can be checked in Node against the slide numbers.
+4. Register it in `src/algorithms/index.js` (remove `soon: true` and add `load`):
 
 ```js
 {
-  id: 'linreg',
-  title: 'Linear Regression',
-  emoji: '📈',
-  category: 'Supervised · Regression',
-  level: 'Beginner',
-  tagline: 'Fit a line by rolling downhill on the loss surface.',
-  accent: '#4D96FF',
-  load: () => import('./linreg/linreg.js'),
+  id: 'decision-tree', section: 'trees',
+  title: 'Decision Tree',
+  category: 'Supervised · Trees', level: 'Beginner',
+  tagline: 'Ask yes/no questions that split the data, picked by entropy or MSE.',
+  accent: '#6B8E5A',
+  load: () => import('./decision-tree/decision-tree.js'),
 },
 ```
 
-The home page card and the `#/linreg` route appear automatically.
+The home card, its § number and the `#/decision-tree` route appear automatically. Add a 3D preview for the card in `src/three/cardart.js` if you like.
 
-## 🐳 Deployment
+## Deployment
 
-The `Dockerfile` builds the site with Node and serves `dist/` with nginx on port **80**. Both base images are multi-arch, so it builds natively on ARM64 boards such as a Raspberry Pi.
+The site is a static build served by nginx in Docker. It runs on a **Raspberry Pi with Dokploy**, behind a **Cloudflare Tunnel**, at **ml.mirazulislamnahid.com**.
+
+**Short version** (full guide with checks and troubleshooting in **[DEPLOY.md](DEPLOY.md)**):
+
+1. Dokploy → **Create Service → Application** → Provider **GitHub** → `TheRealNightmare/ML-Playground`, branch `main`.
+2. Build Type **Dockerfile** (`Dockerfile`, context `.`).
+3. Domains → Host `ml.mirazulislamnahid.com`, Path `/`, Container Port `80`, **HTTPS off** (Cloudflare handles TLS).
+4. **Deploy**, then turn on **Autodeploy**.
+5. Check: `curl https://ml.mirazulislamnahid.com/healthz` → `ok`.
+
+Every push to `main` runs the **Build check** workflow (site build + arm64 Docker image smoke test) and triggers a Dokploy redeploy.
+
+Run it anywhere with Docker:
 
 ```bash
 docker build -t ml-playground .
-docker run -p 8080:80 ml-playground   # http://localhost:8080
+docker run -d -p 8080:80 --restart unless-stopped ml-playground   # http://localhost:8080
 ```
 
-`nginx.conf` gzips text assets, caches hashed files under `/assets/` for a year, and always serves a fresh `index.html` so new deploys show up immediately.
+## Roadmap
 
-### Dokploy + Cloudflare Tunnel
+- [x] §1 Clustering: K-Means, Hierarchical, Fuzzy C-Means, DBSCAN, HDBSCAN
+- [ ] §2 Trees & Ensembles: Decision Tree, Random Forest, Ensemble Learning
+- [ ] §3 Boosting: AdaBoost, XGBoost, CatBoost
+- [ ] §4 Model Evaluation: Cross-Validation
 
-This is how the live site is hosted:
-
-1. In Dokploy, create an **Application** from this GitHub repo.
-2. Set **Build Type** to `Dockerfile`.
-3. Under **Domains**, add `ml.mirazulislamnahid.com` with container port `80`. Leave HTTPS off in Dokploy, because Cloudflare terminates TLS.
-4. In the Cloudflare Tunnel, route the hostname to Dokploy's Traefik service (skip this if a wildcard route already exists).
-5. Turn on **Auto Deploy** so every push to `main` redeploys.
-
-## 🗺️ Roadmap
-
-- [x] Clustering: K-Means, Hierarchical, Fuzzy C-Means, DBSCAN, HDBSCAN
-- [ ] Trees & Ensembles: Decision Tree, Random Forest, Ensemble Learning
-- [ ] Boosting: AdaBoost, XGBoost, CatBoost
-- [ ] Model Evaluation: Cross-Validation
-
-## 👤 Author
+## Author
 
 **Mirazul Islam Nahid**
 [Portfolio](https://mirazulislamnahid.com) · [GitHub](https://github.com/TheRealNightmare) · [Blog](https://therealnightmare.github.io)

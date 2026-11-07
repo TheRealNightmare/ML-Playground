@@ -6,7 +6,7 @@ import { makePoints, rng, gauss, CAT, GREYC, INKC, figureBox } from './points3d.
    card's 2D canvas. Cards render once, then animate while hovered. */
 
 const glassMat = (color, opacity = 0.14) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, side: THREE.DoubleSide });
-const edges = (geo, color = 0x1f2937, opacity = 0.7) => new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
+const edges = (geo, color = 0x4a3f35, opacity = 0.7) => new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
 
 function cloud(P, start, n, c, sd, color, r, sizeFn) {
   for (let i = 0; i < n; i++) {
@@ -19,7 +19,7 @@ function cloud(P, start, n, c, sd, color, r, sizeFn) {
 function octa(color, s = 0.12) {
   const g = new THREE.Group();
   const geo = new THREE.OctahedronGeometry(s);
-  g.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color })), edges(geo, 0x1f2937, 1));
+  g.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color })), edges(geo, 0x4a3f35, 1));
   return g;
 }
 function lineSet(pairs, color, opacity = 0.9) {
@@ -55,8 +55,8 @@ const BUILDERS = {
     const U = (a, b, y, ya, yb) => [[a, ya, 0], [a, y, 0], [a, y, 0], [b, y, 0], [b, y, 0], [b, yb, 0]];
     root.add(lineSet([...U(-0.8, -0.55, -0.5, -0.8, -0.8), ...U(-0.25, 0, -0.4, -0.8, -0.8), ...U(-0.675, -0.125, 0, -0.5, -0.4)], CAT[2]));
     root.add(lineSet([...U(0.3, 0.55, -0.55, -0.8, -0.8), ...U(0.425, 0.8, -0.2, -0.55, -0.8)], CAT[1]));
-    root.add(lineSet([...U(-0.4, 0.61, 0.55, 0, -0.2)], 0x1f2937));
-    const cut = new THREE.Mesh(new THREE.PlaneGeometry(2, 1.2), glassMat(0xdc2626, 0.08));
+    root.add(lineSet([...U(-0.4, 0.61, 0.55, 0, -0.2)], 0x4a3f35));
+    const cut = new THREE.Mesh(new THREE.PlaneGeometry(2, 1.2), glassMat(0xb5523b, 0.08));
     cut.rotation.x = -Math.PI / 2; cut.position.y = 0.2; root.add(cut);
     return { scene, root, P, tick(t, e) { cut.position.y = 0.2 + Math.sin(t * 1.5) * 0.35 * e; } };
   },
@@ -93,7 +93,7 @@ const BUILDERS = {
       P.col.set([GREYC.r, GREYC.g, GREYC.b], k * 3); P.sz[k] = 0.7;
     }
     P.commit(); root.add(P.points);
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 16), glassMat(0x2563eb, 0.12));
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 16), glassMat(0x3d8b8b, 0.12));
     root.add(ball);
     return { scene, root, P, tick(t, e) { const i = Math.floor(((t * 0.4) % 1) * n); ball.position.set(P.pos[i * 3], P.pos[i * 3 + 1], P.pos[i * 3 + 2]); ball.visible = e > 0.05; } };
   },
@@ -112,7 +112,7 @@ const BUILDERS = {
       for (const u of used) pts.forEach((p, j) => { if (used.includes(j)) return; const d = Math.hypot(p[0] - pts[u][0], p[1] - pts[u][1], p[2] - pts[u][2]); if (d < bd) { bd = d; best = [u, j]; } });
       used.push(best[1]); pairs.push(pts[best[0]], pts[best[1]]);
     }
-    const mst = lineSet(pairs, 0x1f2937, 0.55);
+    const mst = lineSet(pairs, 0x4a3f35, 0.55);
     root.add(mst);
     return { scene, root, P, tick(t, e) { mst.material.opacity = 0.25 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.5)) * e + 0.3 * (1 - e); } };
   },
@@ -127,9 +127,9 @@ const BUILDERS = {
       P.pos.set([x, y, z], i * 3); P.col.set([c.r, c.g, c.b], i * 3);
     }
     P.commit(); root.add(P.points);
-    const p1 = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), glassMat(0x111827, 0.07)); p1.rotation.y = Math.PI / 2;
-    const p2 = new THREE.Mesh(new THREE.PlaneGeometry(1, 2), glassMat(0xca8a04, 0.12)); p2.rotation.x = -Math.PI / 2; p2.position.set(-0.5, 0.2, 0);
-    root.add(p1, edges(p1.geometry, 0x1f2937, 0.25), p2);
+    const p1 = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), glassMat(0x3a3029, 0.07)); p1.rotation.y = Math.PI / 2;
+    const p2 = new THREE.Mesh(new THREE.PlaneGeometry(1, 2), glassMat(0xd4a24c, 0.12)); p2.rotation.x = -Math.PI / 2; p2.position.set(-0.5, 0.2, 0);
+    root.add(p1, edges(p1.geometry, 0x4a3f35, 0.25), p2);
     return { scene, root, P, tick(t, e) { p2.position.y = 0.2 + Math.sin(t * 2) * 0.12 * e; } };
   },
   'random-forest'() {
@@ -160,7 +160,7 @@ const BUILDERS = {
     for (let i = 0; i < 90; i++) { const c = CAT[[0, 1, 2][i % 3]]; P.col.set([c.r, c.g, c.b], i * 3); }
     const place = (m) => { for (let i = 0; i < 90; i++) { const h0 = homes[i % 3]; P.pos.set([h0[0] * (1 - m) + offs[i][0], h0[1] * (1 - m) + offs[i][1], h0[2] * (1 - m) + offs[i][2]], i * 3); } P.commit(); };
     place(0); root.add(P.points);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.012, 8, 64), new THREE.MeshBasicMaterial({ color: 0x1f2937 }));
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.012, 8, 64), new THREE.MeshBasicMaterial({ color: 0x4a3f35 }));
     root.add(ring);
     return { scene, root, P, tick(t, e) { place(e * (0.5 + 0.5 * Math.sin(t * 1.6 - Math.PI / 2))); ring.lookAt(0, 0, 10); } };
   },
@@ -176,7 +176,7 @@ const BUILDERS = {
       P.pos.set([x, y, z], i * 3); P.col.set([c.r, c.g, c.b], i * 3);
     }
     P.commit(); root.add(P.points);
-    const stump = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), glassMat(0x111827, 0.07)); stump.rotation.y = Math.PI / 2; stump.position.x = 0.1;
+    const stump = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), glassMat(0x3a3029, 0.07)); stump.rotation.y = Math.PI / 2; stump.position.x = 0.1;
     root.add(stump);
     return { scene, root, P, tick(t, e) { const s = 1 + (0.8 + 0.6 * Math.sin(t * 4)) * e; heavy.forEach((i) => { P.sz[i] = s; }); P.commit(); } };
   },
@@ -187,7 +187,7 @@ const BUILDERS = {
       const hgt = 1.5 * Math.pow(0.72, i);
       const geo = new THREE.BoxGeometry(0.16, 1, 0.16);
       const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: i === 0 ? CAT[3] : CAT[1] }));
-      m.add(edges(geo, 0x1f2937, 0.9));
+      m.add(edges(geo, 0x4a3f35, 0.9));
       m.position.set(-0.75 + i * 0.25, -1 + hgt / 2, 0);
       m.scale.y = hgt;
       m.userData.h = hgt;
@@ -201,7 +201,7 @@ const BUILDERS = {
     const cubes = cats.map((c, i) => {
       const geo = new THREE.BoxGeometry(0.26, 0.26, 0.26);
       const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: CAT[[3, 0, 2][c]] }));
-      m.add(edges(geo, 0x1f2937, 0.9));
+      m.add(edges(geo, 0x4a3f35, 0.9));
       m.position.set(-0.7 + (i % 5) * 0.35, 0.45 - Math.floor(i / 5) * 0.45, 0);
       root.add(m);
       return m;
@@ -213,7 +213,7 @@ const BUILDERS = {
     const slabs = [0, 1, 2, 3, 4].map((k) => {
       const geo = new THREE.BoxGeometry(1.6, 0.22, 1.0);
       const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: CAT[0], transparent: true, opacity: 0.85 }));
-      m.add(edges(geo, 0x1f2937, 0.9));
+      m.add(edges(geo, 0x4a3f35, 0.9));
       m.position.y = -0.7 + k * 0.33;
       root.add(m);
       return m;

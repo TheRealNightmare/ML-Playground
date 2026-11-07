@@ -1,0 +1,55 @@
+name: Build check
+
+# Runs on every push and pull request. Dokploy deploys from GitHub on its own;
+# this check tells you early (✓ / ✗ on the commit) if a change would break the build.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    name: npm build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Check the build output
+        run: |
+          test -f dist/index.html
+          ls dist/assets | head -n 20
+
+  docker-arm64:
+    name: Docker image (linux/arm64, like the Pi)
+    runs-on: ubuntu-latest
+    needs: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image (not pushed)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm64
+          push: false
+          load: true
+          tags: ml-playground:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test the container
+        run: |
+          docker run -d --name web --platform linux/arm64 -p 8080:80 ml-playground:ci
+          for i in $(seq 1 30); do curl -fsS http://localhost:8080/healthz && break; sleep 2; done
+          curl -fsS http://localhost:8080/ | grep -q '<div id="app">'
+          docker rm -f web

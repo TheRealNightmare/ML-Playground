@@ -7,7 +7,7 @@ import { gauss, clip, blobs, moons } from '../../core/datasets.js';
 import { agglomerate, labelsAfter, leafOrder, mds2, METRICS } from './algo.js';
 import { LECTURES, LINKAGE_INFO, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const FAINT = new THREE.Color(0xe5e7eb);
+const FAINT = new THREE.Color(0xddd3c4);
 
 function bridge(n) {
   const out = [];
@@ -29,7 +29,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { accent: '#0D9488', title: 'Hierarchical Clustering', emoji: '', category: 'Unsupervised · Clustering', level: 'Beginner friendly', blurb: 'Merge the two closest clusters again and again, and grow a family tree of your data.' },
+    meta: { accent: '#6B8E5A', title: 'Hierarchical Clustering', emoji: '', category: 'Unsupervised · Clustering', level: 'Beginner friendly', blurb: 'Merge the two closest clusters again and again, and grow a family tree of your data.' },
     datasets: ['blobs', 'moons', BRIDGE, 'rings', 'uniform', 'blank'],
     defaultDataset: 'blobs',
     n: { min: 6, max: 200, step: 2, value: 48 },
@@ -207,7 +207,7 @@ export function mount(root) {
     const N = n();
     ctx.font = '600 11px JetBrains Mono Variable, monospace';
     if (!S.res || N < 2) {
-      ctx.fillStyle = '#6B7280'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#8A7C6E'; ctx.textAlign = 'center';
       ctx.fillText('Add at least 2 points', W / 2, H / 2);
       dendroGeom = null;
       return;
@@ -223,7 +223,7 @@ export function mount(root) {
     for (let i = 0; i < N; i++) node.set(i, { x: xLeaf.get(i), hgt: 0 });
 
     // y ticks
-    ctx.strokeStyle = '#E5E7EB'; ctx.fillStyle = '#6B7280'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1;
+    ctx.strokeStyle = '#DDD3C4'; ctx.fillStyle = '#8A7C6E'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1;
     for (let i = 0; i <= 3; i++) {
       const v = (maxH * i) / 3, y = yOf(v);
       ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
@@ -243,14 +243,14 @@ export function mount(root) {
       const below = k < cutM;
       const root = lab[mg.members[0]];
       const c = below ? COLORS[S.colorOf.get(root) ?? 0] : null;
-      ctx.strokeStyle = below ? '#' + c.getHexString() : '#D1D5DB';
+      ctx.strokeStyle = below ? '#' + c.getHexString() : '#CFC3B1';
       ctx.lineWidth = k === S.m - 1 && S.phase !== 'done' ? 3.2 : 2;
       const yM = yOf(mg.height);
       ctx.beginPath();
       ctx.moveTo(A.x, yOf(A.hgt)); ctx.lineTo(A.x, yM); ctx.lineTo(B.x, yM); ctx.lineTo(B.x, yOf(B.hgt));
       ctx.stroke();
       if (N <= 12) {
-        ctx.fillStyle = '#374151'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillStyle = '#5A4E43'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
         ctx.fillText(fmt(mg.height), nd.x, yM - 2);
       }
     }
@@ -260,10 +260,10 @@ export function mount(root) {
       const root = lab[leaf];
       const c = S.colorOf.get(root);
       ctx.beginPath(); ctx.arc(x, yOf(0), 3, 0, Math.PI * 2);
-      ctx.fillStyle = c != null && cutM > 0 && root >= N ? '#' + COLORS[c].getHexString() : '#9CA3AF';
+      ctx.fillStyle = c != null && cutM > 0 && root >= N ? '#' + COLORS[c].getHexString() : '#ADA092';
       ctx.fill();
       if (showLeafNames) {
-        ctx.fillStyle = '#111827'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#3A3029'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         ctx.font = '700 10.5px JetBrains Mono Variable, monospace';
         ctx.fillText(nameOf(leaf), x, yOf(0) + 6);
         ctx.font = '600 11px JetBrains Mono Variable, monospace';
@@ -275,13 +275,13 @@ export function mount(root) {
       const lo = merges[N - S.K - 1]?.height ?? 0, hi = merges[N - S.K]?.height ?? maxH;
       const hc = (lo + hi) / 2;
       cutY = yOf(hc);
-      ctx.setLineDash([6, 5]); ctx.strokeStyle = '#111827'; ctx.lineWidth = 1.8;
+      ctx.setLineDash([6, 5]); ctx.strokeStyle = '#3A3029'; ctx.lineWidth = 1.8;
       ctx.beginPath(); ctx.moveTo(pad.l, cutY); ctx.lineTo(W - pad.r, cutY); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = '#111827'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.font = '800 11px JetBrains Mono Variable, monospace';
+      ctx.fillStyle = '#3A3029'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.font = '800 11px JetBrains Mono Variable, monospace';
       ctx.fillText(`K = ${S.K}`, W - pad.r - 2, cutY - 3);
     }
-    ctx.strokeStyle = '#111827'; ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#3A3029'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(pad.l, yOf(0)); ctx.lineTo(W - pad.r, yOf(0)); ctx.stroke();
     dendroGeom = { yOf, maxH, pad, ph, cutY };
   }

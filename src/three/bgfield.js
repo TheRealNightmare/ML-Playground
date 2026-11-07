@@ -19,7 +19,7 @@ export function mountBackground(container) {
   const base = Array.from({ length: N }, () => [(r() - 0.5) * 16, (r() - 0.5) * 10, (r() - 0.5) * 8]);
   const phase = base.map(() => r() * Math.PI * 2);
   const P = makePoints(N, { size: 0.06, outline: 0.0, opacity: 0.4 });
-  const palette = [0x93c5fd, 0xfdba74, 0x5eead4, 0xc4b5fd, 0xcbd5e1, 0xcbd5e1, 0xcbd5e1].map((c) => new THREE.Color(c));
+  const palette = [0x9cc5c5, 0xeeb3a0, 0xb5cba8, 0xc9aec4, 0xd2c6b5, 0xd2c6b5, 0xd2c6b5].map((c) => new THREE.Color(c));
   for (let i = 0; i < N; i++) {
     const c = palette[i % palette.length];
     P.col[i * 3] = c.r; P.col[i * 3 + 1] = c.g; P.col[i * 3 + 2] = c.b;
@@ -30,7 +30,7 @@ export function mountBackground(container) {
   const lpos = new Float32Array(MAXL * 6);
   const lgeo = new THREE.BufferGeometry();
   lgeo.setAttribute('position', new THREE.BufferAttribute(lpos, 3).setUsage(THREE.DynamicDrawUsage));
-  const lines = new THREE.LineSegments(lgeo, new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.09, depthWrite: false }));
+  const lines = new THREE.LineSegments(lgeo, new THREE.LineBasicMaterial({ color: 0xa89a88, transparent: true, opacity: 0.09, depthWrite: false }));
   lines.frustumCulled = false;
   group.add(lines);
 

@@ -6,11 +6,11 @@ import { table, note, para, step, fmt, fx } from '../../core/worked.js';
 import * as H from './algo.js';
 import { LECTURES, intuitionTab, mathTab, challengesTab } from './content.js';
 
-const NOISE_RING = new THREE.Color(0x9ca3af);
-const GRAPE = new THREE.Color(0x7c3aed);
-const SHORT = new THREE.Color(0x0d9488);
-const LONG = new THREE.Color(0xf97316);
-const FAINT = new THREE.Color(0xe5e7eb);
+const NOISE_RING = new THREE.Color(0xada092);
+const GRAPE = new THREE.Color(0x8a5a83);
+const SHORT = new THREE.Color(0x6b8e5a);
+const LONG = new THREE.Color(0xe07a5f);
+const FAINT = new THREE.Color(0xddd3c4);
 
 export function mount(root) {
   const S = {
@@ -21,7 +21,7 @@ export function mount(root) {
   };
 
   const L = createPointLab(root, {
-    meta: { accent: '#0891B2', title: 'HDBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Advanced', blurb: 'Density clustering for groups of different densities — through core distances and a spanning tree.' },
+    meta: { accent: '#4F6D8A', title: 'HDBSCAN', emoji: '', category: 'Unsupervised · Density', level: 'Advanced', blurb: 'Density clustering for groups of different densities — through core distances and a spanning tree.' },
     datasets: ['density', 'noisymoons', 'noisy', 'smiley', 'uniform', 'blank'],
     defaultDataset: 'density',
     n: { min: 20, max: 500, step: 20, value: 240 },
@@ -207,7 +207,7 @@ export function mount(root) {
     ctx.clearRect(0, 0, W, Hh);
     ctx.font = '600 11px JetBrains Mono Variable, monospace';
     if (!S.R || !(S.phase === 'tree' || S.phase === 'done') || !S.R.tree.rows.length) {
-      ctx.fillStyle = '#6B7280'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#8A7C6E'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(S.R ? 'Step until the tree is built' : 'Add points', W / 2, Hh / 2);
       return;
     }
@@ -219,7 +219,7 @@ export function mount(root) {
     const pw = W - pad.l - pad.r, ph = Hh - pad.t - pad.b;
     const yOf = (lam) => pad.t + (Math.min(lam, lmax) / lmax) * ph;
     // axis
-    ctx.strokeStyle = '#E5E7EB'; ctx.fillStyle = '#6B7280'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = '#DDD3C4'; ctx.fillStyle = '#8A7C6E'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     for (let i = 0; i <= 3; i++) { const lam = (lmax * i) / 3, y = yOf(lam); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke(); ctx.fillText(fmt(lam, lmax < 10 ? 2 : 0), pad.l - 4, y); }
 
     const kids = new Map(), falls = new Map(), sizeAtBirth = new Map([[root, N]]);
@@ -237,7 +237,7 @@ export function mount(root) {
       let remaining = sizeAtBirth.get(c);
       let lam = birth.get(c) || 0;
       const sel = S.phase === 'done' && S.R.selected.has(c);
-      const col = sel ? '#' + COLORS[labelOf.get(c) % COLORS.length].getHexString() : '#F3F4F6';
+      const col = sel ? '#' + COLORS[labelOf.get(c) % COLORS.length].getHexString() : '#E6DED1';
       ctx.fillStyle = col;
       const top = yOf(lam);
       let i = 0;
@@ -249,7 +249,7 @@ export function mount(root) {
         lam = l2;
       }
       if (sel) {
-        ctx.strokeStyle = '#111827'; ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#3A3029'; ctx.lineWidth = 2.5;
         const w = sizeAtBirth.get(c) * unit;
         ctx.strokeRect(cx - w / 2, top, w, Math.max(yOf(lam) - top, 2));
       }
@@ -260,7 +260,7 @@ export function mount(root) {
         const span = ((x1 - x0) * r.size) / tot;
         // connector
         const ccx = xs + span / 2;
-        ctx.strokeStyle = '#6B7280'; ctx.lineWidth = 1.2;
+        ctx.strokeStyle = '#8A7C6E'; ctx.lineWidth = 1.2;
         ctx.beginPath(); ctx.moveTo(cx, yOf(r.lambda)); ctx.lineTo(ccx, yOf(r.lambda)); ctx.stroke();
         drawCluster(r.child, xs, xs + span);
         xs += span;
@@ -337,7 +337,7 @@ export function mount(root) {
     else if (S.phase === 'ready') nar = { emoji: '', title: `Ready · k = ${S.k}, min cluster size = ${S.mcs}`, text: 'Step through the six stages: core distances → mutual reachability → spanning tree → condense/cut → clusters.' };
     else if (S.phase === 'core') nar = { emoji: '', title: 'Step 2 · Core distances', text: `Each circle reaches the point’s <b>${S.k}${S.k === 1 ? 'st' : S.k === 2 ? 'nd' : S.k === 3 ? 'rd' : 'th'} nearest neighbour</b>. Small circles = dense areas, big circles = sparse ones. Hover any point.` };
     else if (S.phase === 'mrd') nar = { emoji: '', title: 'Step 3 · Mutual reachability', text: 'New distance = max(core of p, core of q, real distance). Points in sparse areas get pushed away from everything, so noise is easy to cut off later.' };
-    else if (S.phase === 'mst') nar = { emoji: '', title: `Step 4 · Minimum spanning tree (${S.mstShown}/${R.edges.length})`, text: 'Connect all points with the cheapest links (by mutual reachability), shortest first. <span style="color:#0891B2">Mint</span> = short, <span style="color:#F97316">coral</span> = long.' };
+    else if (S.phase === 'mst') nar = { emoji: '', title: `Step 4 · Minimum spanning tree (${S.mstShown}/${R.edges.length})`, text: 'Connect all points with the cheapest links (by mutual reachability), shortest first. <span style="color:#4F6D8A">Mint</span> = short, <span style="color:#E07A5F">coral</span> = long.' };
     else if (S.phase === 'tree') {
       active = 'tree';
       nar = S.mode === 'cut'
