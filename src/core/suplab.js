@@ -28,7 +28,7 @@ export function createSupLab(root, cfg) {
   const L = createPointLab(root, {
     ...cfg,
     datasets: sets,
-    extraDatasets: SUPDATA,
+    extraDatasets: { ...SUPDATA, ...(cfg.extraDatasets || {}) },
     defaultDataset: cfg.defaultDataset || sets[0].id,
     maxSegments: cfg.maxSegments || 6000,
     blankId: () => (L.task === 'reg' ? 'rblank' : 'cblank'),
