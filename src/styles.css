@@ -587,3 +587,5 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible) { outline: none; }
 .dartboard { width: 100%; height: auto; display: block; margin: 8px 0 2px; }
 .btn-row { display: flex; gap: 8px; }
 .btn-row .btn { flex: 1; }
+.chips-mini { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+.chips-mini .chip { padding: 3px 9px; font-size: 11px; min-width: 0; min-height: 0; width: auto; }
